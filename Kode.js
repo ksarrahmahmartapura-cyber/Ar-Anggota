@@ -3,6 +3,7 @@ function onOpen() {
   ui.createMenu('Arrahmah')
     .addItem('Home', 'fnHome')
     .addItem('Pendaftaran Modern', 'fnDaftarAnggotaModern')
+    .addItem('Bulk Import Anggota', 'fnBulkImportAnggota')
     .addToUi();
 }
 
@@ -10,6 +11,12 @@ function fnDaftarAnggotaModern() {
   var template = HtmlService.createTemplateFromFile('daftarAnggotaModern');
   var htmlOutput = template.evaluate().setWidth(1200).setHeight(800);
   SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Pendaftaran Anggota (Modern)');
+}
+
+function fnBulkImportAnggota() {
+  var template = HtmlService.createTemplateFromFile('bulkImportAnggota');
+  var htmlOutput = template.evaluate().setWidth(1200).setHeight(850);
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Bulk Import Anggota (Excel Paste)');
 }
 
 function fnHome() {

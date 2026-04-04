@@ -1,396 +1,600 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pendaftaran Anggota - Modern Wizard</title>
+  <title>Pendaftaran Anggota Modern - KKS Arrahmah</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      background: #f8fafc;
     }
+
     .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
     }
+
+    .step-dot {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
     .step-dot.active {
       background-color: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+      transform: scale(1.1);
     }
+
     .step-dot.completed {
       background-color: #22c55e;
     }
+
     .step-dot.completed::after {
       content: '✓';
       color: white;
       font-size: 0.75rem;
     }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
+
+    .input-field {
+      @apply w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all duration-300 text-sm;
     }
-    input[type=number] {
-      -moz-appearance: textfield;
+
+    .label-text {
+      @apply text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1 block;
+    }
+
+    @media (max-width: 640px) {
+      .step-label {
+        display: none;
+      }
+
+      .glass-card {
+        border-radius: 0;
+      }
+    }
+
+    /* Floating summary for desktop */
+    @media (min-width: 1024px) {
+      .summary-card {
+        position: sticky;
+        top: 2rem;
+      }
+    }
+
+    .checkout-row {
+      @apply flex justify-between py-2 border-b border-gray-50 last:border-0;
     }
   </style>
 </head>
-<body class="min-h-screen py-8 px-4 flex items-center justify-center">
 
-  <div class="w-full max-w-4xl glass-card rounded-3xl p-8 transition-all duration-500">
-    <!-- Header -->
-    <div class="mb-10 text-center">
-      <h1 class="text-3xl font-bold text-gray-800 mb-2">Pendaftaran Anggota</h1>
-      <p class="text-gray-500">Lengkapi data Anda untuk bergabung dengan KKS Arrahmah</p>
-    </div>
+<body class="min-h-screen flex items-start justify-center sm:py-10 bg-slate-50">
 
-    <!-- Progress Tracker -->
-    <div class="relative flex justify-between mb-12 max-w-2xl mx-auto">
-      <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2 z-0"></div>
-      <div id="progress-bar" class="absolute top-1/2 left-0 w-0 h-1 bg-green-500 -translate-y-1/2 z-0 transition-all duration-500"></div>
-      
-      <!-- Step 1 -->
-      <div class="relative z-10 flex flex-col items-center">
-        <div class="step-dot active w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200 transition-colors" data-step="1"></div>
-        <span class="text-xs font-semibold mt-2 text-gray-500">Profil</span>
-      </div>
-      <!-- Step 2 -->
-      <div class="relative z-10 flex flex-col items-center">
-        <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200" data-step="2"></div>
-        <span class="text-xs font-semibold mt-2 text-gray-500">Alamat</span>
-      </div>
-      <!-- Step 3 -->
-      <div class="relative z-10 flex flex-col items-center">
-        <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200" data-step="3"></div>
-        <span class="text-xs font-semibold mt-2 text-gray-500">Pekerjaan</span>
-      </div>
-      <!-- Step 4 -->
-      <div class="relative z-10 flex flex-col items-center">
-        <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200" data-step="4"></div>
-        <span class="text-xs font-semibold mt-2 text-gray-500">Keuangan</span>
-      </div>
-    </div>
+  <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6 px-0 sm:px-4">
 
-    <form id="wizardForm" class="space-y-8">
-      <!-- Step 1: Profil Pribadi -->
-      <div id="step-1" class="step-content space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Tanggal Bergabung*</label>
-            <input type="date" id="tanggalBergabung" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Nama Lengkap*</label>
-            <input type="text" id="namaLengkap" required placeholder="Masukkan nama sesuai KTP" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">NIK (16 Digit)*</label>
-            <input type="number" id="nik" required placeholder="630XXXXXXXXXXXXX" oninput="if(this.value.length > 16) this.value = this.value.slice(0, 16)" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Tempat Lahir*</label>
-            <input type="text" id="tempatLahir" required placeholder="Kota Kelahiran" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Tanggal Lahir*</label>
-            <input type="date" id="tanggalLahir" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700 block">Jenis Kelamin*</label>
-            <div class="flex gap-4 p-1 bg-gray-100 rounded-xl w-fit">
-              <label class="cursor-pointer">
-                <input type="radio" name="jenisKelamin" value="Laki-Laki" checked class="hidden peer">
-                <div class="px-6 py-2 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm text-gray-500 font-medium transition-all">Laki-Laki</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="jenisKelamin" value="Perempuan" class="hidden peer">
-                <div class="px-6 py-2 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm text-gray-500 font-medium transition-all">Perempuan</div>
-              </label>
-            </div>
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Nomor Telpon*</label>
-            <input type="number" id="telpon" required placeholder="08XXXXXXXXXX" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Email*</label>
-            <input type="email" id="email" required placeholder="example@email.com" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
-          </div>
+    <!-- Main Form -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="glass-card sm:rounded-[2.5rem] p-6 sm:p-10 transition-all">
+        <!-- Header -->
+        <div class="mb-8 text-center sm:text-left">
+          <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Bergabung Bersama Kami</h1>
+          <p class="text-slate-400 text-sm mt-1">KKS Arrahmah - Cabang Martapura</p>
         </div>
-      </div>
 
-      <!-- Step 2: Alamat -->
-      <div id="step-2" class="step-content hidden space-y-8">
-        <div class="space-y-4">
-          <h3 class="font-bold text-gray-700 border-b pb-2">Alamat Sesuai KTP</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <input type="text" id="alamatKTP" placeholder="Jl. Alamat Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+        <!-- Progress Tracker -->
+        <div class="relative flex justify-between mb-10 max-w-md mx-auto sm:mx-0">
+          <div class="absolute top-1/2 left-0 w-full h-[2px] bg-slate-100 -translate-y-1/2 z-0"></div>
+          <div id="progress-bar"
+            class="absolute top-1/2 left-0 w-0 h-[2px] bg-green-500 -translate-y-1/2 z-0 transition-all duration-500">
+          </div>
+
+          <div class="relative z-10 flex flex-col items-center group" onclick="goToStep(1)">
+            <div id="dot-1"
+              class="step-dot active w-7 h-7 rounded-full flex items-center justify-center bg-white border-2 border-slate-100">
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="rtKTP" placeholder="RT" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-              <input type="number" id="rwKTP" placeholder="RW" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            <span class="step-label text-[10px] font-bold mt-2 text-slate-400 uppercase">Profil</span>
+          </div>
+          <div class="relative z-10 flex flex-col items-center group" onclick="goToStep(2)">
+            <div id="dot-2"
+              class="step-dot w-7 h-7 rounded-full flex items-center justify-center bg-white border-2 border-slate-100">
             </div>
-            <input type="text" id="kelDesaKTP" placeholder="Kelurahan/Desa" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-            <input type="text" id="kecKTP" placeholder="Kecamatan" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-            <input type="number" id="kodePosKTP" placeholder="Kode Pos" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            <span class="step-label text-[10px] font-bold mt-2 text-slate-400 uppercase">Alamat</span>
+          </div>
+          <div class="relative z-10 flex flex-col items-center group" onclick="goToStep(3)">
+            <div id="dot-3"
+              class="step-dot w-7 h-7 rounded-full flex items-center justify-center bg-white border-2 border-slate-100">
+            </div>
+            <span class="step-label text-[10px] font-bold mt-2 text-slate-400 uppercase">Pekerjaan</span>
+          </div>
+          <div class="relative z-10 flex flex-col items-center group" onclick="goToStep(4)">
+            <div id="dot-4"
+              class="step-dot w-7 h-7 rounded-full flex items-center justify-center bg-white border-2 border-slate-100">
+            </div>
+            <span class="step-label text-[10px] font-bold mt-2 text-slate-400 uppercase">Simpanan</span>
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="flex justify-between items-center border-b pb-2">
-            <h3 class="font-bold text-gray-700">Alamat Tempat Tinggal Sekarang</h3>
-            <label class="flex items-center gap-2 cursor-pointer text-xs text-green-600 font-bold hover:text-green-700">
-              <input type="checkbox" id="samaKTP" class="w-4 h-4 rounded text-green-500"> Sama dengan KTP
-            </label>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <input type="text" id="alamatTinggal" placeholder="Jl. Alamat Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="rtTinggal" placeholder="RT" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-              <input type="number" id="rwTinggal" placeholder="RW" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-            </div>
-            <input type="text" id="kelDesaTinggal" placeholder="Kelurahan/Desa" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-            <input type="text" id="kecTinggal" placeholder="Kecamatan" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-            <input type="number" id="kodePosTinggal" placeholder="Kode Pos" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 3: Keluarga & Pekerjaan -->
-      <div id="step-3" class="step-content hidden space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <!-- Keluarga -->
-          <div class="space-y-4">
-            <h3 class="font-bold text-gray-700 border-b pb-2">Keluarga Serumah</h3>
-            <input type="text" id="keluargaSerumah" placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-            <input type="text" id="hubunganKeluargaSerumah" placeholder="Hubungan (Istri/Anak/dll)" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-            <input type="number" id="telponKeluargaSerumah" placeholder="No Telpon" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-          </div>
-          <div class="space-y-4">
-            <h3 class="font-bold text-gray-700 border-b pb-2">Keluarga Tidak Serumah</h3>
-            <input type="text" id="keluargaTidakSerumah" placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-            <input type="number" id="telponKeluargaTidakSerumah" placeholder="No Telpon" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <h3 class="font-bold text-gray-700 border-b pb-2">Detail Pekerjaan</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-gray-500 px-1">Jenis Pekerjaan*</label>
-              <input type="text" id="jenisPekerjaan" list="listJenisPekerjaan" required placeholder="Pilih atau Ketik Pekerjaan" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-              <datalist id="listJenisPekerjaan">
-                <option value="Aparatur Sipil Negara (ASN)">Aparatur Sipil Negara (ASN)</option>
-                <option value="Pegawai BUMN / BUMD">Pegawai BUMN / BUMD</option>
-                <option value="Karyawan Swasta">Karyawan Swasta</option>
-                <option value="Wirausaha">Wirausaha</option>
-                <option value="Freelancer">Freelancer</option>
-              </datalist>
-            </div>
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-gray-500 px-1">Nama Kantor / Tempat Usaha*</label>
-              <input type="text" id="kantorPekerjaan" required placeholder="PT. XYZ / Toko ABC" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <input type="text" id="alamatKantor" placeholder="Alamat Kantor Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="rtKantor" placeholder="RT" class="px-4 py-3 rounded-xl border border-gray-200 outline-none">
-              <input type="number" id="rwKantor" placeholder="RW" class="px-4 py-3 rounded-xl border border-gray-200 outline-none">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: Keuangan & Finalisasi -->
-      <div id="step-4" class="step-content hidden space-y-8">
-        <div class="space-y-4">
-          <h3 class="font-bold text-gray-700 border-b pb-2 text-center">Data Rekening Bank</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <input type="text" id="namaBank" placeholder="Nama Bank (BSI/BCA/dll)" class="px-4 py-3 rounded-xl border border-gray-200 outline-none text-center">
-            <input type="number" id="noRekBank" placeholder="Nomor Rekening" class="px-4 py-3 rounded-xl border border-gray-200 outline-none text-center">
-            <input type="text" id="anBank" placeholder="Atas Nama" class="px-4 py-3 rounded-xl border border-gray-200 outline-none text-center">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="p-6 bg-blue-50 rounded-2xl space-y-4">
-            <h4 class="font-bold text-blue-800 text-center">Simpanan Pokok*</h4>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="simpananPokok" value="300000" checked class="hidden peer">
-                <div class="py-3 rounded-xl bg-white border-2 border-transparent peer-checked:border-blue-500 peer-checked:text-blue-600 text-center font-bold text-gray-600 shadow-sm transition-all text-sm">Rp 300.000</div>
-              </label>
-              <div class="relative">
-                <input type="number" id="pokokLain" placeholder="Nominal Lain" class="w-full py-3 px-2 rounded-xl bg-white border-2 border-transparent focus:border-blue-500 outline-none text-center font-bold text-sm text-gray-700 shadow-sm">
+        <form id="wizardForm" class="space-y-6">
+          <!-- Step 1: Profil -->
+          <div id="step-1" class="step-content space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="label-text">Nama Lengkap*</label>
+                <input type="text" id="namaLengkap" placeholder="Budi Santoso" class="input-field"
+                  oninput="formatName(this)">
+              </div>
+              <div>
+                <label class="label-text">NIK (16 Digit)*</label>
+                <input type="number" id="nik" placeholder="630XXXXXXXXXXXXX" class="input-field"
+                  oninput="validateNIK(this)">
+                <span id="nik-error" class="text-[9px] text-red-500 hidden font-bold">NIK harus 16 digit</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="label-text">Tgl Lahir*</label>
+                  <input type="date" id="tanggalLahir" class="input-field" onchange="detectAge(this)">
+                </div>
+                <div class="flex flex-col justify-end pb-2">
+                  <span id="age-badge"
+                    class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg w-fit hidden"></span>
+                </div>
+              </div>
+              <div>
+                <label class="label-text">Whatsapp*</label>
+                <input type="number" id="telpon" placeholder="08XXXXXXXXXX" class="input-field"
+                  oninput="formatPhone(this)">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="label-text">Email Pribadi*</label>
+                <input type="email" id="email" placeholder="nama@email.com" class="input-field">
               </div>
             </div>
           </div>
 
-          <div class="p-6 bg-green-50 rounded-2xl space-y-4">
-            <h4 class="font-bold text-green-800 text-center">Simpanan Wajib*</h4>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="simpananWajib" value="600000" checked class="hidden peer">
-                <div class="py-3 rounded-xl bg-white border-2 border-transparent peer-checked:border-green-500 peer-checked:text-green-600 text-center font-bold text-gray-600 shadow-sm transition-all text-sm">Rp 600.000</div>
-              </label>
-              <div class="relative">
-                <input type="number" id="wajibLain" placeholder="Nominal Lain" class="w-full py-3 px-2 rounded-xl bg-white border-2 border-transparent focus:border-green-500 outline-none text-center font-bold text-sm text-gray-700 shadow-sm">
+          <!-- Step 2: Alamat -->
+          <div id="step-2" class="step-content hidden space-y-6">
+            <div class="p-4 bg-slate-50/50 rounded-3xl space-y-3">
+              <div class="flex justify-between items-center px-1">
+                <label class="label-text !mb-0">Alamat KTP</label>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="kodePosKTP" placeholder="Kode Pos"
+                    class="w-24 px-3 py-1 rounded-full border text-xs text-center outline-none focus:border-green-500"
+                    oninput="autoFillAddress(this, 'KTP')">
+                  <span id="pos-loading-KTP"
+                    class="text-[9px] text-green-500 hidden animate-pulse font-bold tracking-widest">MENCARI...</span>
+                </div>
+              </div>
+              <input type="text" id="alamatKTP" placeholder="Jalan / Perumahan / No Rumah" class="input-field">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <input type="number" id="rtKTP" placeholder="RT" class="input-field text-center">
+                <input type="number" id="rwKTP" placeholder="RW" class="input-field text-center">
+                <input type="text" id="kelDesaKTP" placeholder="Kelurahan" class="input-field">
+                <input type="text" id="kecKTP" placeholder="Kecamatan" class="input-field">
+              </div>
+            </div>
+
+            <div class="p-4 bg-green-50/20 rounded-3xl border border-green-50 space-y-3">
+              <div class="flex justify-between items-center px-1">
+                <label class="label-text !mb-0 text-green-600">Alamat Domisili</label>
+                <label class="flex items-center gap-1 cursor-pointer text-[9px] font-bold text-green-500 uppercase">
+                  <input type="checkbox" id="samaKTP" class="w-3 h-3 rounded text-green-500"
+                    onchange="copyAddress(this)"> SAMA KTP
+                </label>
+              </div>
+              <input type="text" id="alamatTinggal" placeholder="Jalan / Perumahan / No Rumah" class="input-field">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <input type="number" id="rtTinggal" placeholder="RT" class="input-field text-center">
+                <input type="number" id="rwTinggal" placeholder="RW" class="input-field text-center">
+                <input type="text" id="kelDesaTinggal" placeholder="Kelurahan" class="input-field">
+                <input type="text" id="kecTinggal" placeholder="Kecamatan" class="input-field">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Pekerjaan -->
+          <div id="step-3" class="step-content hidden space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="label-text">Jenis Pekerjaan*</label>
+                <select id="jenisPekerjaan" class="input-field">
+                  <option value="">Pilih Pekerjaan</option>
+                  <option value="ASN">ASN / Pegawai Negeri</option>
+                  <option value="Karyawan Swasta">Karyawan Swasta</option>
+                  <option value="Wiraswasta">Wiraswasta / Usaha</option>
+                  <option value="Honorer">Honorer / Kontrak</option>
+                </select>
+              </div>
+              <div>
+                <label class="label-text">Nama Instansi/Kantor*</label>
+                <input type="text" id="kantorPekerjaan" placeholder="PT / Toko / Kantor" class="input-field">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="label-text">Alamat Kantor*</label>
+                <input type="text" id="alamatKantor" placeholder="Alamat lengkap tempat bekerja" class="input-field">
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-50">
+              <label class="label-text">Keluarga Yang Bisa Dihubungi (Darurat)</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                <input type="text" id="keluargaTidakSerumah" placeholder="Nama Lengkap" class="input-field">
+                <input type="number" id="telponKeluargaTidakSerumah" placeholder="Nomor Whatsapp" class="input-field">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Simpanan -->
+          <div id="step-4" class="step-content hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="p-6 rounded-3xl bg-blue-50/50 border border-blue-100 space-y-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                    1</div>
+                  <h3 class="font-bold text-blue-900 text-sm">Simpanan Pokok</h3>
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="flex items-center gap-3 p-3 bg-white rounded-2xl cursor-pointer border border-transparent peer-checked:border-blue-500 transition-all shadow-sm">
+                    <input type="radio" name="simpananPokok" value="300000" checked onchange="updateCheckout()">
+                    <span class="text-sm font-bold text-slate-700">Rp 300.000 (Standar)</span>
+                  </label>
+                  <input type="number" id="pokokLain" placeholder="Atau nominal lain..."
+                    class="input-field !bg-white border-blue-100" oninput="updateCheckout()">
+                </div>
+              </div>
+
+              <div class="p-6 rounded-3xl bg-green-50/50 border border-green-100 space-y-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                    2</div>
+                  <h3 class="font-bold text-green-900 text-sm">Simpanan Wajib</h3>
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="flex items-center gap-3 p-3 bg-white rounded-2xl cursor-pointer border border-transparent transition-all shadow-sm">
+                    <input type="radio" name="simpananWajib" value="600000" checked onchange="updateCheckout()">
+                    <span class="text-sm font-bold text-slate-700">Rp 600.000 / Tahun</span>
+                  </label>
+                  <input type="number" id="wajibLain" placeholder="Atau nominal lain..."
+                    class="input-field !bg-white border-green-100" oninput="updateCheckout()">
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <label class="label-text text-center">Metode Pembayaran Awal</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label
+                  class="flex items-center justify-center gap-2 p-3 rounded-2xl border cursor-pointer hover:bg-slate-50 transition-all font-bold text-xs">
+                  <input type="radio" name="akunPembayaran" value="Cash" checked> Tunai
+                </label>
+                <label
+                  class="flex items-center justify-center gap-2 p-3 rounded-2xl border cursor-pointer hover:bg-slate-50 transition-all font-bold text-xs">
+                  <input type="radio" name="akunPembayaran" value="Transfer"> Transfer
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Buttons -->
+          <div class="pt-8 flex flex-col sm:flex-row justify-between gap-3">
+            <button type="button" id="prevBtn"
+              class="w-full sm:w-auto px-10 py-3 rounded-2xl font-bold text-slate-400 bg-slate-100 hidden hover:scale-95 transition-all">Kembali</button>
+            <button type="button" id="nextBtn"
+              class="w-full sm:w-auto sm:ml-auto px-12 py-4 rounded-2xl bg-green-500 text-white font-extrabold shadow-lg shadow-green-200 hover:bg-green-600 hover:-translate-y-1 transition-all">LANJUTKAN</button>
+            <button type="submit" id="submitBtn"
+              class="w-full sm:w-auto sm:ml-auto px-12 py-4 rounded-2xl bg-slate-800 text-white font-extrabold shadow-lg shadow-slate-200 hover:bg-black hover:-translate-y-1 transition-all hidden">AJUKAN
+              PENDAFTARAN</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Sidebar: Smart Summary Card -->
+    <div class="lg:col-span-1">
+      <div class="summary-card glass-card rounded-[2rem] p-6 space-y-6">
+        <h2 class="font-extrabold text-slate-800 text-lg flex items-center gap-2">
+          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Ringkasan Input
+        </h2>
+
+        <div id="summary-empty" class="text-center py-10 space-y-3">
+          <div class="w-16 h-16 bg-slate-50 rounded-full mx-auto flex items-center justify-center">
+            <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <p class="text-xs text-slate-400 font-medium italic">Data Anda akan muncul di sini otomatis...</p>
+        </div>
+
+        <div id="summary-content" class="hidden space-y-6">
+          <div class="space-y-2">
+            <p id="sum-nama" class="text-sm font-bold text-slate-700"></p>
+            <p id="sum-nik" class="text-xs text-slate-400 font-medium"></p>
+            <p id="sum-age" class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded inline-block"></p>
+          </div>
+
+          <div id="sum-alamat-box" class="hidden p-3 bg-slate-50 rounded-2xl space-y-1">
+            <p class="text-[9px] font-bold text-slate-300 uppercase">Domisili</p>
+            <p id="sum-alamat" class="text-[11px] leading-relaxed text-slate-500 font-medium"></p>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100">
+            <p class="text-[10px] font-extrabold text-slate-400 uppercase text-center mb-3">Rincian Setoran Awal</p>
+            <div class="space-y-1">
+              <div class="checkout-row">
+                <span class="text-xs text-slate-500">S. Pokok</span>
+                <span id="check-pokok" class="text-xs font-bold text-slate-800">Rp 0</span>
+              </div>
+              <div class="checkout-row">
+                <span class="text-xs text-slate-500">S. Wajib</span>
+                <span id="check-wajib" class="text-xs font-bold text-slate-800">Rp 0</span>
+              </div>
+              <div class="checkout-row !border-0 pt-4">
+                <span class="text-sm font-extrabold text-slate-800">TOTAL</span>
+                <span id="check-total" class="text-sm font-extrabold text-green-600 underline">Rp 0</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="max-w-md mx-auto space-y-2">
-          <label class="text-sm font-bold text-gray-500 block text-center">Metode Pembayaran*</label>
-          <select id="akunPembayaran" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-center font-bold bg-white cursor-pointer hover:border-green-500 transition-all">
-            <option value="Cash">Cash</option>
-            <option value="BSI">BSI (Transfer)</option>
-            <option value="Muamalat">Muamalat (Transfer)</option>
-            <option value="Bank Kalsel">Bank Kalsel (Transfer)</option>
-          </select>
+        <div class="p-4 bg-yellow-50/50 rounded-2xl flex gap-3">
+          <div class="flex-shrink-0 text-yellow-500 mt-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <p class="text-[10px] leading-relaxed text-yellow-700">Data Anda tersimpan sebagai <b>Draft</b> otomatis di
+            perangkat ini.</p>
         </div>
       </div>
-
-      <!-- Navigation Buttons -->
-      <div class="pt-6 flex justify-between gap-4">
-        <button type="button" id="prevBtn" class="px-8 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-all hidden">Kembali</button>
-        <button type="button" id="nextBtn" class="ml-auto px-10 py-3 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all shadow-lg shadow-green-200">Lanjutkan</button>
-        <button type="submit" id="submitBtn" class="ml-auto px-10 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all shadow-lg shadow-green-200 hidden">Daftar Sekarang</button>
-      </div>
-    </form>
-
-    <!-- Overlay Loading -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
-      <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-      <p class="mt-4 font-bold text-gray-800">Memproses Pendaftaran...</p>
     </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay"
+    class="fixed inset-0 bg-white/95 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden p-6 text-center">
+    <div class="w-14 h-14 border-4 border-slate-100 border-t-green-500 rounded-full animate-spin"></div>
+    <p class="mt-6 font-bold text-slate-800 text-lg tracking-tight">Memproses Pendaftaran...</p>
+    <p class="text-sm text-slate-400 mt-2">Mohon tunggu sebentar, kami sedang mengamankan data Anda.</p>
   </div>
 
   <script>
     let currentStep = 1;
     const totalSteps = 4;
     const form = document.getElementById('wizardForm');
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    const progressBar = document.getElementById('progress-bar');
     const loadingOverlay = document.getElementById('loadingOverlay');
 
-    function updateStepIndicator() {
-      document.querySelectorAll('.step-dot').forEach((dot, index) => {
-        const stepNum = index + 1;
-        if (stepNum < currentStep) {
-          dot.classList.add('completed');
-          dot.classList.remove('active');
-        } else if (stepNum === currentStep) {
-          dot.classList.add('active');
-          dot.classList.remove('completed');
-        } else {
-          dot.classList.remove('active', 'completed');
-        }
-      });
-      progressBar.style.width = \`\${((currentStep - 1) / (totalSteps - 1)) * 100}%\`;
+    // --- SMART FEATURES: AUTO-FORMATTING ---
+    function formatName(el) {
+      el.value = el.value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+      updateLiveSummary();
     }
 
+    function formatPhone(el) {
+      if (el.value.startsWith('8')) el.value = '08' + el.value.slice(1);
+      updateLiveSummary();
+    }
+
+    function validateNIK(el) {
+      const error = document.getElementById('nik-error');
+      if (el.value.length !== 16) {
+        el.classList.add('border-yellow-300');
+        error.classList.remove('hidden');
+      } else {
+        el.classList.remove('border-yellow-300');
+        error.classList.add('hidden');
+      }
+      updateLiveSummary();
+    }
+
+    function detectAge(el) {
+      if (!el.value) return;
+      const dob = new Date(el.value);
+      const diff = Date.now() - dob.getTime();
+      const age = new Date(diff).getUTCFullYear() - 1970;
+
+      const badge = document.getElementById('age-badge');
+      let gen = "";
+      const year = dob.getFullYear();
+      if (year >= 1997 && year <= 2012) gen = "Gen Z";
+      else if (year >= 1981 && year <= 1996) gen = "Millennial";
+      else if (year >= 1965 && year <= 1980) gen = "Gen X";
+
+      badge.textContent = `${age} Thn | ${gen}`;
+      badge.classList.remove('hidden');
+      updateLiveSummary();
+    }
+
+    // --- SMART FEATURES: AUTO-FILL ADDRESS ---
+    async function autoFillAddress(el, type) {
+      if (el.value.length === 5) {
+        const loading = document.getElementById(`pos-loading-${type}`);
+        loading.classList.remove('hidden');
+        try {
+          // Mock API logic for demo purposes (usually fetch from a real Indonesian region API)
+          // For Martapura sample: 70611, 70612, etc.
+          setTimeout(() => {
+            if (el.value === "70611") {
+              document.getElementById(`kelDesa${type}`).value = "Jawa";
+              document.getElementById(`kec${type}`).value = "Martapura";
+            } else if (el.value === "70619") {
+              document.getElementById(`kelDesa${type}`).value = "Indrasari";
+              document.getElementById(`kec${type}`).value = "Martapura";
+            }
+            loading.classList.add('hidden');
+            updateLiveSummary();
+          }, 800);
+        } catch (e) { loading.classList.add('hidden'); }
+      }
+    }
+
+    function copyAddress(cb) {
+      if (cb.checked) {
+        ['alamat', 'rt', 'rw', 'kelDesa', 'kec'].forEach(f => {
+          document.getElementById(`${f}Tinggal`).value = document.getElementById(`${f}KTP`).value;
+        });
+      }
+      updateLiveSummary();
+    }
+
+    // --- UI LOGIC: NAVIGATION ---
     function showStep(step) {
       document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById(\`step-\${step}\`).classList.remove('hidden');
-      
-      prevBtn.classList.toggle('hidden', step === 1);
-      nextBtn.classList.toggle('hidden', step === totalSteps);
-      submitBtn.classList.toggle('hidden', step !== totalSteps);
-      
-      updateStepIndicator();
+      document.getElementById(`step-${step}`).classList.remove('hidden');
+
+      document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
+      document.getElementById('nextBtn').classList.toggle('hidden', step === totalSteps);
+      document.getElementById('submitBtn').classList.toggle('hidden', step !== totalSteps);
+
+      updateStepUI(step);
+      saveToDraft();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    nextBtn.addEventListener('click', () => {
-      // Basic validation
-      const currentInputs = document.getElementById(\`step-\${currentStep}\`).querySelectorAll('[required]');
-      let isValid = true;
-      currentInputs.forEach(input => {
-        if (!input.value) {
-          input.classList.add('border-red-500');
-          isValid = false;
-        } else {
-          input.classList.remove('border-red-500');
-        }
+    function updateStepUI(step) {
+      document.querySelectorAll('.step-dot').forEach((dot, idx) => {
+        const s = idx + 1;
+        dot.classList.toggle('active', s === step);
+        dot.classList.toggle('completed', s < step);
+        dot.classList.toggle('bg-slate-100', s > step);
       });
+      const bar = document.getElementById('progress-bar');
+      bar.style.width = `${((step - 1) / (totalSteps - 1)) * 100}%`;
+    }
+
+    function goToStep(step) {
+      // Only allow going to previous steps or next step if valid
+      if (step < currentStep) {
+        currentStep = step;
+        showStep(currentStep);
+      }
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const inputs = document.getElementById(`step-${currentStep}`).querySelectorAll('[required], input[type="text"], input[type="number"]');
+      let isValid = true;
+      // Basic validation for name and nik on step 1
+      if (currentStep === 1) {
+        if (document.getElementById('namaLengkap').value.length < 3) isValid = false;
+        if (document.getElementById('nik').value.length !== 16) isValid = false;
+      }
 
       if (isValid && currentStep < totalSteps) {
         currentStep++;
         showStep(currentStep);
+      } else {
+        alert("Mohon lengkapi data dengan benar.");
       }
     });
 
-    prevBtn.addEventListener('click', () => {
+    document.getElementById('prevBtn').addEventListener('click', () => {
       if (currentStep > 1) {
         currentStep--;
         showStep(currentStep);
       }
     });
 
-    // Auto-fill address Tinggal if "Sama dengan KTP" is checked
-    document.getElementById('samaKTP').addEventListener('change', (e) => {
-      if (e.target.checked) {
-        document.getElementById('alamatTinggal').value = document.getElementById('alamatKTP').value;
-        document.getElementById('rtTinggal').value = document.getElementById('rtKTP').value;
-        document.getElementById('rwTinggal').value = document.getElementById('rwKTP').value;
-        document.getElementById('kelDesaTinggal').value = document.getElementById('kelDesaKTP').value;
-        document.getElementById('kecTinggal').value = document.getElementById('kecKTP').value;
-        document.getElementById('kodePosTinggal').value = document.getElementById('kodePosKTP').value;
+    // --- LIVE SUMMARY & CHECKOUT ---
+    function updateCheckout() {
+      const pokok = document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value;
+      const wajib = document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value;
+
+      const total = parseInt(pokok) + parseInt(wajib);
+
+      document.getElementById('check-pokok').textContent = `Rp ${parseInt(pokok).toLocaleString()}`;
+      document.getElementById('check-wajib').textContent = `Rp ${parseInt(wajib).toLocaleString()}`;
+      document.getElementById('check-total').textContent = `Rp ${total.toLocaleString()}`;
+
+      updateLiveSummary();
+    }
+
+    function updateLiveSummary() {
+      const nama = document.getElementById('namaLengkap').value;
+      const summaryEmpty = document.getElementById('summary-empty');
+      const summaryContent = document.getElementById('summary-content');
+
+      if (nama.length > 2) {
+        summaryEmpty.classList.add('hidden');
+        summaryContent.classList.remove('hidden');
+
+        document.getElementById('sum-nama').textContent = nama;
+        document.getElementById('sum-nik').textContent = `NIK: ${document.getElementById('nik').value || '---'}`;
+        document.getElementById('sum-age').textContent = document.getElementById('age-badge').textContent;
+
+        const alamat = document.getElementById('alamatTinggal').value;
+        if (alamat) {
+          document.getElementById('sum-alamat-box').classList.remove('hidden');
+          document.getElementById('sum-alamat').textContent = `${alamat}, RT.${document.getElementById('rtTinggal').value}/${document.getElementById('rwTinggal').value}, ${document.getElementById('kelDesaTinggal').value}`;
+        }
       }
-    });
+    }
 
-    // Set Default Join Date
-    document.getElementById('tanggalBergabung').value = new Date().toISOString().split('T')[0];
+    // --- DATA PERSISTENCE: DRAFT ---
+    function saveToDraft() {
+      const data = {};
+      document.querySelectorAll('input, select').forEach(el => {
+        if (el.id) data[el.id] = el.value;
+      });
+      localStorage.setItem('kks_form_draft', JSON.stringify(data));
+    }
 
+    function loadDraft() {
+      const draft = localStorage.getItem('kks_form_draft');
+      if (draft) {
+        const data = JSON.parse(draft);
+        for (const key in data) {
+          const el = document.getElementById(key);
+          if (el) el.value = data[key];
+        }
+        updateCheckout();
+        detectAge(document.getElementById('tanggalLahir'));
+      }
+    }
+
+    // --- FINAL SUBMISSION ---
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       loadingOverlay.classList.remove('hidden');
 
       const formData = {
-        tanggalBergabung: document.getElementById('tanggalBergabung').value,
+        tanggalBergabung: new Date().toISOString().split('T')[0],
         namaAnggota: document.getElementById('namaLengkap').value,
         nik: document.getElementById('nik').value,
         tempatLahir: document.getElementById('tempatLahir').value,
         tanggalLahir: document.getElementById('tanggalLahir').value,
-        jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
+        jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked')?.value || "Lelaki",
         telponAnggota: "'" + document.getElementById('telpon').value,
         email: document.getElementById('email').value,
-        alamatKTP: `${document.getElementById('alamatKTP').value} RT.${document.getElementById('rtKTP').value} RW.${document.getElementById('rwKTP').value} Kel.${document.getElementById('kelDesaKTP').value} Kec.${document.getElementById('kecKTP').value} ${document.getElementById('kodePosKTP').value}`,
-        alamatTinggal: `${document.getElementById('alamatTinggal').value} RT.${document.getElementById('rtTinggal').value} RW.${document.getElementById('rwTinggal').value} Kel.${document.getElementById('kelDesaTinggal').value} Kec.${document.getElementById('kecTinggal').value} ${document.getElementById('kodePosTinggal').value}`,
-        keluargaSerumah: document.getElementById('keluargaSerumah').value,
-        hubunganKeluargaSerumah: document.getElementById('hubunganKeluargaSerumah').value,
-        telponKeluargaSerumah: "'" + document.getElementById('telponKeluargaSerumah').value,
-        keluargaTidakSerumah: document.getElementById('keluargaTidakSerumah').value,
-        telponKeluargaTidakSerumah: "'" + document.getElementById('telponKeluargaTidakSerumah').value,
+        alamatKTP: `${document.getElementById('alamatKTP').value} RT.${document.getElementById('rtKTP').value} RW.${document.getElementById('rwKTP').value} Kel.${document.getElementById('kelDesaKTP').value} Kec.${document.getElementById('kecKTP').value}`,
+        alamatTinggal: `${document.getElementById('alamatTinggal').value} RT.${document.getElementById('rtTinggal').value} RW.${document.getElementById('rwTinggal').value} Kel.${document.getElementById('kelDesaTinggal').value} Kec.${document.getElementById('kecTinggal').value}`,
         jenisPekerjaan: document.getElementById('jenisPekerjaan').value,
         kantorPekerjaan: document.getElementById('kantorPekerjaan').value,
-        alamatKantor: `${document.getElementById('alamatKantor').value} RT.${document.getElementById('rtKantor').value} RW.${document.getElementById('rwKantor').value}`,
-        namaBank: document.getElementById('namaBank').value,
-        noRekBank: document.getElementById('noRekBank').value,
-        anBank: document.getElementById('anBank').value,
+        alamatKantor: document.getElementById('alamatKantor').value,
         simpananPokok: document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value,
         simpananWajib: document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value,
-        akunPembayaran: document.getElementById('akunPembayaran').value
+        akunPembayaran: document.querySelector('input[name="akunPembayaran"]:checked').value
       };
 
-      // Backend call to the user provided URL (simulated as the target spreadsheet logic)
       google.script.run.withSuccessHandler(() => {
+        localStorage.removeItem('kks_form_draft');
         loadingOverlay.innerHTML = `
-          <div class="text-green-500 text-6xl mb-4">✓</div>
-          <p class="font-bold text-gray-800">Pendaftaran Berhasil!</p>
-          <button onclick="google.script.host.close()" class="mt-6 px-6 py-2 bg-green-600 text-white rounded-xl">Tutup</button>
+          <div class="text-green-500 text-6xl mb-6">✓</div>
+          <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Sukses Terkirim!</h2>
+          <p class="text-slate-400 mb-8 max-w-xs mx-auto">Selamat! Pendaftaran Anda berhasil. Silahkan Hubungi Admin untuk konfirmasi pembayaran.</p>
+          <button onclick="google.script.host.close()" class="px-12 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-black transition-all">Selesai</button>
         `;
       }).newTransaction({
         method: 'addMember',
@@ -398,6 +602,11 @@
         data: formData
       });
     });
+
+    // INIT
+    loadDraft();
+    updateCheckout();
   </script>
 </body>
+
 </html>

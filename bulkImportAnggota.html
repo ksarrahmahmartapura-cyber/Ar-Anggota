@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Import Anggota - KKS Arrahmah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #fdfdfd;
+        }
+
+        .glass-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 500px;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            z-index: 10;
+            cursor: help;
+        }
+
+        .status-badge {
+            @apply px-2 py-0.5 rounded-full text-[9px] font-bold uppercase;
+        }
+
+        .status-pending {
+            @apply bg-yellow-100 text-yellow-700;
+        }
+
+        .status-success {
+            @apply bg-green-100 text-green-700;
+        }
+
+        .status-error {
+            @apply bg-red-100 text-red-700;
+        }
+    </style>
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-800">Bulk Import Anggota</h1>
+                <p class="text-slate-400 text-xs">Copy data dari Excel dan Paste di bawah ini.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="downloadTemplate()"
+                    class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-200 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download Template
+                </button>
+                <button onclick="clearData()"
+                    class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-all">Bersihkan</button>
+                <button id="submitBtn" onclick="submitBulk()" disabled
+                    class="px-6 py-2 bg-green-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-green-100 disabled:opacity-50 disabled:shadow-none transition-all">Simpan
+                    Ke Database</button>
+            </div>
+        </div>
+
+        <!-- Paste Area -->
+        <div id="paste-container"
+            class="glass-card rounded-[2rem] p-8 border-2 border-dashed border-slate-200 text-center hover:border-green-400 transition-all group cursor-pointer"
+            onclick="focusPaste()">
+            <div class="pointer-events-none space-y-3">
+                <div
+                    class="w-16 h-16 bg-slate-50 rounded-full mx-auto flex items-center justify-center group-hover:bg-green-50 transition-all">
+                    <svg class="w-8 h-8 text-slate-300 group-hover:text-green-500 transition-all" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                        </path>
+                    </svg>
+                </div>
+                <p class="text-sm font-bold text-slate-500">Klik di sini lalu tekan <kbd
+                        class="px-2 py-1 bg-slate-100 rounded text-[10px]">Ctrl + V</kbd></p>
+                <p class="text-[10px] text-slate-400">Pastikan urutan kolom sesuai dengan template Excel.</p>
+            </div>
+            <textarea id="paste-area" class="opacity-0 absolute -z-10 w-1 h-1" onpaste="handlePaste(event)"></textarea>
+        </div>
+
+        <!-- Instructions / Legend -->
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-2">
+            <div class="p-2 bg-slate-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 1</p>
+                <p class="text-[9px] font-bold text-slate-600">Tgl Daftar</p>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 2</p>
+                <p class="text-[9px] font-bold text-slate-600">Nama</p>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 3</p>
+                <p class="text-[9px] font-bold text-slate-600">NIK</p>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 4</p>
+                <p class="text-[9px] font-bold text-slate-600">Tmp Lahir</p>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 5</p>
+                <p class="text-[9px] font-bold text-slate-600">Tgl Lahir</p>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 6-19</p>
+                <p class="text-[9px] font-bold text-slate-600">Data Lain...</p>
+            </div>
+        </div>
+
+        <!-- Preview Table -->
+        <div id="preview-container" class="hidden glass-card rounded-[2rem] overflow-hidden">
+            <div class="overflow-x-auto">
+                <table id="importTable" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50">
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">No</th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">Status</th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">Nama Anggota
+                            </th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">NIK</th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">WA</th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">S.Pokok</th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">S.Wajib</th>
+                            <th class="p-4 text-[10px] uppercase font-extrabold text-slate-400 border-b">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="importBody">
+                        <!-- Data will appear here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Result / Log -->
+        <div id="log-container"
+            class="hidden p-4 bg-slate-800 rounded-2xl text-slate-300 text-[10px] font-mono space-y-1">
+            <p class="text-green-400 font-bold mb-2">SYSTEM LOG:</p>
+            <div id="logs" class="max-h-40 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        let importData = [];
+
+        function focusPaste() {
+            document.getElementById('paste-area').focus();
+        }
+
+        function handlePaste(e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            const rows = text.split(/\r?\n/).filter(row => row.trim() !== '');
+
+            const parsed = rows.map(row => row.split('\t'));
+
+            processParsedData(parsed);
+
+            document.getElementById('paste-container').classList.add('hidden');
+            document.getElementById('preview-container').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function processParsedData(data) {
+            importData = data.map((row, idx) => {
+                return {
+                    id: idx,
+                    status: 'pending',
+                    data: {
+                        tanggalBergabung: row[0] || new Date().toISOString().split('T')[0],
+                        namaAnggota: row[1] || '',
+                        nik: row[2] || '',
+                        tempatLahir: row[3] || '',
+                        tanggalLahir: row[4] || '',
+                        jenisKelamin: row[5] || 'Lelaki',
+                        telponAnggota: row[6] || '',
+                        email: row[7] || '',
+                        alamatKTP: row[8] || '',
+                        alamatTinggal: row[9] || '',
+                        jenisPekerjaan: row[10] || '',
+                        kantorPekerjaan: row[11] || '',
+                        alamatKantor: row[12] || '',
+                        namaBank: row[13] || '',
+                        noRekBank: row[14] || '',
+                        anBank: row[15] || '',
+                        simpananPokok: row[16] || '300000',
+                        simpananWajib: row[17] || '600000',
+                        akunPembayaran: row[18] || 'Cash'
+                    }
+                };
+            });
+            renderTable();
+        }
+
+        function renderTable() {
+            const body = document.getElementById('importBody');
+            body.innerHTML = '';
+
+            importData.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-all border-b border-slate-50";
+                tr.innerHTML = `
+          <td class="p-4 text-xs font-bold text-slate-400">${idx + 1}</td>
+          <td class="p-4">
+             <span id="status-${idx}" class="status-badge status-${row.status}">${row.status}</span>
+          </td>
+          <td class="p-4 text-xs font-bold text-slate-700">${row.data.namaAnggota}</td>
+          <td class="p-4 text-xs text-slate-500 font-mono">${row.data.nik}</td>
+          <td class="p-4 text-xs text-slate-500">${row.data.telponAnggota}</td>
+          <td class="p-4 text-xs font-bold text-blue-600">Rp ${parseInt(row.data.simpananPokok).toLocaleString()}</td>
+          <td class="p-4 text-xs font-bold text-green-600">Rp ${parseInt(row.data.simpananWajib).toLocaleString()}</td>
+          <td class="p-4">
+             <button onclick="removeRow(${idx})" class="text-red-400 hover:text-red-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+             </button>
+          </td>
+        `;
+                body.appendChild(tr);
+            });
+        }
+
+        function removeRow(idx) {
+            importData.splice(idx, 1);
+            renderTable();
+            if (importData.length === 0) clearData();
+        }
+
+        function clearData() {
+            importData = [];
+            document.getElementById('paste-container').classList.remove('hidden');
+            document.getElementById('preview-container').classList.add('hidden');
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('log-container').classList.add('hidden');
+        }
+
+        async function submitBulk() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = "Processing...";
+            document.getElementById('log-container').classList.remove('hidden');
+
+            addLog(`Mulai memproses ${importData.length} baris data...`);
+
+            for (let i = 0; i < importData.length; i++) {
+                const row = importData[i];
+                updateRowStatus(i, 'processing');
+                addLog(`[${i + 1}/${importData.length}] Mengirim data ${row.data.namaAnggota}...`);
+
+                try {
+                    await new Promise((resolve, reject) => {
+                        google.script.run
+                            .withSuccessHandler(res => {
+                                updateRowStatus(i, 'success');
+                                addLog(`[OK] ${row.data.namaAnggota} Berhasil.`, 'text-green-400');
+                                resolve(res);
+                            })
+                            .withFailureHandler(err => {
+                                updateRowStatus(i, 'error');
+                                addLog(`[ERROR] ${row.data.namaAnggota}: ${err}`, 'text-red-400');
+                                reject(err);
+                            })
+                            .newTransaction({
+                                method: 'addMember',
+                                sheet: 'simpanan',
+                                data: row.data
+                            });
+                    });
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            btn.textContent = "Suhu Selesai!";
+            addLog("--- PROSES SELESAI ---");
+        }
+
+        function updateRowStatus(idx, status) {
+            const badge = document.getElementById(`status-${idx}`);
+            if (badge) {
+                badge.className = `status-badge status-${status}`;
+                badge.textContent = status;
+            }
+        }
+
+        function addLog(msg, colorClass = '') {
+            const logs = document.getElementById('logs');
+            const p = document.createElement('p');
+            if (colorClass) p.className = colorClass;
+            p.textContent = `> ${msg}`;
+            logs.appendChild(p);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function downloadTemplate() {
+            const headers = [
+                "Tanggal Daftar (YYYY-MM-DD)",
+                "Nama Anggota",
+                "NIK",
+                "Tempat Lahir",
+                "Tanggal Lahir (YYYY-MM-DD)",
+                "Jenis Kelamin (Lelaki/Wanita)",
+                "No. WA",
+                "Email",
+                "Alamat KTP",
+                "Alamat Domisili",
+                "Jenis Pekerjaan",
+                "Nama Kantor",
+                "Alamat Kantor",
+                "Nama Bank",
+                "No. Rekening",
+                "Atas Nama Bank",
+                "Simpanan Pokok",
+                "Simpanan Wajib",
+                "Akun Pembayaran (Cash/Transfer)"
+            ];
+            const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Template_Import_Anggota.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+
+</html>
