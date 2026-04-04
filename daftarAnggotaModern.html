@@ -588,16 +588,16 @@
         akunPembayaran: document.querySelector('input[name="akunPembayaran"]:checked').value
       };
 
-      google.script.run.withSuccessHandler(() => {
+      google.script.run.withSuccessHandler((res) => {
         localStorage.removeItem('kks_form_draft');
         loadingOverlay.innerHTML = `
           <div class="text-green-500 text-6xl mb-6">✓</div>
-          <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Sukses Terkirim!</h2>
-          <p class="text-slate-400 mb-8 max-w-xs mx-auto">Selamat! Pendaftaran Anda berhasil. Silahkan Hubungi Admin untuk konfirmasi pembayaran.</p>
+          <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Pendaftaran Terkirim!</h2>
+          <p class="text-slate-400 mb-8 max-w-xs mx-auto">${res.message}</p>
           <button onclick="google.script.host.close()" class="px-12 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-black transition-all">Selesai</button>
         `;
       }).newTransaction({
-        method: 'addMember',
+        method: 'addPending',
         sheet: 'simpanan',
         data: formData
       });

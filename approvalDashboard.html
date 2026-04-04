@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approval Dashboard - KKS Arrahmah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #fdfdfd;
+        }
+
+        .glass-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03);
+        }
+
+        .btn-approve {
+            @apply px-4 py-2 bg-green-500 text-white rounded-xl font-bold text-xs hover:bg-green-600 transition-all shadow-lg shadow-green-100;
+        }
+
+        .btn-reject {
+            @apply px-4 py-2 bg-red-50 text-red-500 rounded-xl font-bold text-xs hover:bg-red-100 transition-all;
+        }
+    </style>
+</head>
+
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">Persetujuan Anggota Baru</h1>
+                <p class="text-slate-400 text-xs mt-1">Review dan aktifkan pendaftaran calon anggota.</p>
+            </div>
+            <button onclick="refreshData()" class="p-2 rounded-full hover:bg-slate-100 transition-all">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Table -->
+        <div class="glass-card rounded-[2rem] overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50">
+                            <th class="p-5 text-[10px] uppercase font-extrabold text-slate-400 border-b">Tgl Daftar</th>
+                            <th class="p-5 text-[10px] uppercase font-extrabold text-slate-400 border-b">Nama Calon</th>
+                            <th class="p-5 text-[10px] uppercase font-extrabold text-slate-400 border-b">Kontak (WA)
+                            </th>
+                            <th class="p-5 text-[10px] uppercase font-extrabold text-slate-400 border-b text-center">
+                                Setoran Awal</th>
+                            <th class="p-5 text-[10px] uppercase font-extrabold text-slate-400 border-b text-center">
+                                Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingBody">
+                        <tr id="initial-loading">
+                            <td colspan="5" class="p-10 text-center">
+                                <div
+                                    class="w-8 h-8 border-4 border-slate-100 border-t-green-500 rounded-full animate-spin mx-auto">
+                                </div>
+                                <p class="text-xs text-slate-400 mt-4 font-bold">Mengambil data...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="no-data"
+            class="hidden text-center py-20 bg-slate-50/50 rounded-[2rem] border-2 border-dashed border-slate-100">
+            <svg class="w-12 h-12 text-slate-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                </path>
+            </svg>
+            <p class="text-sm font-bold text-slate-400">Belum ada pendaftaran baru yang masuk.</p>
+        </div>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div id="processOverlay"
+        class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
+        <div class="w-12 h-12 border-4 border-slate-100 border-t-green-500 rounded-full animate-spin"></div>
+        <p class="mt-4 font-bold text-slate-800" id="processMsg">Sedang Memproses...</p>
+    </div>
+
+    <script>
+        function refreshData() {
+            document.getElementById('pendingBody').innerHTML = `
+                <tr><td colspan="5" class="p-10 text-center">
+                    <div class="w-8 h-8 border-4 border-slate-100 border-t-green-500 rounded-full animate-spin mx-auto"></div>
+                </td></tr>`;
+            loadPendingData();
+        }
+
+        function loadPendingData() {
+            google.script.run
+                .withSuccessHandler(renderData)
+                .withFailureHandler(err => alert("Gagal mengambil data: " + err))
+                .getPendingMembersData();
+        }
+
+        function renderData(data) {
+            const body = document.getElementById('pendingBody');
+            const noData = document.getElementById('no-data');
+
+            if (!data || data.length === 0) {
+                body.innerHTML = '';
+                noData.classList.remove('hidden');
+                return;
+            }
+
+            noData.classList.add('hidden');
+            body.innerHTML = '';
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-all border-b border-slate-50";
+
+                const tgl = new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                const total = parseInt(item.pokok) + parseInt(item.wajib);
+
+                tr.innerHTML = `
+                    <td class="p-5 text-xs text-slate-400 font-bold">${tgl}</td>
+                    <td class="p-5">
+                        <p class="text-sm font-bold text-slate-800">${item.nama}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">${item.nik}</p>
+                    </td>
+                    <td class="p-5 text-xs text-slate-500">${item.wa}</td>
+                    <td class="p-5 text-center">
+                        <p class="text-xs font-bold text-green-600">Rp ${total.toLocaleString()}</p>
+                        <p class="text-[9px] text-slate-400">Pokok+Wajib</p>
+                    </td>
+                    <td class="p-5">
+                        <div class="flex gap-2 justify-center">
+                            <button onclick="approve(${item.rowIndex}, '${item.nama}')" class="btn-approve">APPROVE</button>
+                            <button onclick="reject(${item.rowIndex}, '${item.nama}')" class="btn-reject">REJECT</button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function approve(index, name) {
+            if (!confirm(`Setujui pendaftaran ${name}?`)) return;
+            showOverlay(`Menyetujui ${name}...`);
+            google.script.run
+                .withSuccessHandler(res => {
+                    hideOverlay();
+                    alert(res.message);
+                    refreshData();
+                })
+                .withFailureHandler(err => {
+                    hideOverlay();
+                    alert("Error: " + err);
+                })
+                .processPendingMember('approve', index);
+        }
+
+        function reject(index, name) {
+            if (!confirm(`Tolak dan hapus pendaftaran ${name}?`)) return;
+            showOverlay(`Menghapus ${name}...`);
+            google.script.run
+                .withSuccessHandler(res => {
+                    hideOverlay();
+                    alert(res.message);
+                    refreshData();
+                })
+                .processPendingMember('reject', index);
+        }
+
+        function showOverlay(msg) {
+            document.getElementById('processMsg').textContent = msg;
+            document.getElementById('processOverlay').classList.remove('hidden');
+        }
+
+        function hideOverlay() {
+            document.getElementById('processOverlay').classList.add('hidden');
+        }
+
+        // Init
+        loadPendingData();
+    </script>
+</body>
+
+</html>
