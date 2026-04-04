@@ -133,6 +133,7 @@
                 const total = parseInt(item.pokok) + parseInt(item.wajib);
 
                 tr.innerHTML = `
+                    <td class="p-5 border-b"><input type="checkbox" class="pending-check rounded border-slate-300" onchange="updateBatchBtn()" value="${item.rowIndex}"></td>
                     <td class="p-5 text-xs text-slate-400 font-bold">${tgl}</td>
                     <td class="p-5">
                         <p class="text-sm font-bold text-slate-800">${item.nama}</p>
@@ -152,6 +153,45 @@
                 `;
                 body.appendChild(tr);
             });
+        }
+
+        function toggleAll(el) {
+            const checks = document.querySelectorAll('.pending-check');
+            checks.forEach(c => c.checked = el.checked);
+            updateBatchBtn();
+        }
+
+        function updateBatchBtn() {
+            const checked = document.querySelectorAll('.pending-check:checked');
+            const btn = document.getElementById('batchBtn');
+            const count = document.getElementById('batchCount');
+
+            if (checked.length > 0) {
+                btn.classList.remove('hidden');
+                count.textContent = checked.length;
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function approveBatch() {
+            const checked = document.querySelectorAll('.pending-check:checked');
+            const indices = Array.from(checked).map(c => parseInt(c.value));
+
+            if (!confirm(`Approve ${checked.length} anggota sekaligus?`)) return;
+
+            showOverlay(`Memproses ${checked.length} anggota...`);
+            google.script.run
+                .withSuccessHandler(res => {
+                    hideOverlay();
+                    alert(`Berhasil mengaktifkan ${res.count} anggota!`);
+                    refreshData();
+                })
+                .withFailureHandler(err => {
+                    hideOverlay();
+                    alert("Error Batch: " + err);
+                })
+                .processBatchApproval(indices);
         }
 
         function approve(index, name) {

@@ -41,9 +41,8 @@ function fnApprovalDashboard() {
 }
 
 function getPendingMembersData() {
-  const ss = SpreadsheetApp.openById('1-czelMtKWcMe5lEw0WyxUKZrCZvP2cRohNECeHudD34');
-  const sheet = ss.getSheetByName('Pending_Pendaftaran');
-  if (!sheet) return [];
+  const processor = new InputTransactions({ method: 'getPending', data: {} });
+  const sheet = processor.ssPending;
   const data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
   return data.slice(1).map((row, index) => {
@@ -66,4 +65,14 @@ function processPendingMember(action, rowIndex) {
     data: {}
   });
   return processor.transactionEntries();
+}
+
+function processMembersBulk(membersArray) {
+  const processor = new InputTransactions({ method: 'bulk', data: {} });
+  return processor.addMembersBulk(membersArray);
+}
+
+function processBatchApproval(indices) {
+  const processor = new InputTransactions({ method: 'bulk', data: {} });
+  return processor.approvePendingBulk(indices);
 }

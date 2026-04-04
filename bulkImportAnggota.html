@@ -251,45 +251,27 @@
             document.getElementById('log-container').classList.add('hidden');
         }
 
-        async function submitBulk() {
+        function submitBulk() {
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.textContent = "Processing...";
+            btn.textContent = "Processing Bulk...";
             document.getElementById('log-container').classList.remove('hidden');
 
-            addLog(`Mulai memproses ${importData.length} baris data...`);
+            addLog(`Mulai memproses ${importData.length} baris data secara massal...`);
 
-            for (let i = 0; i < importData.length; i++) {
-                const row = importData[i];
-                updateRowStatus(i, 'processing');
-                addLog(`[${i + 1}/${importData.length}] Mengirim data ${row.data.namaAnggota}...`);
-
-                try {
-                    await new Promise((resolve, reject) => {
-                        google.script.run
-                            .withSuccessHandler(res => {
-                                updateRowStatus(i, 'success');
-                                addLog(`[OK] ${row.data.namaAnggota} Berhasil.`, 'text-green-400');
-                                resolve(res);
-                            })
-                            .withFailureHandler(err => {
-                                updateRowStatus(i, 'error');
-                                addLog(`[ERROR] ${row.data.namaAnggota}: ${err}`, 'text-red-400');
-                                reject(err);
-                            })
-                            .newTransaction({
-                                method: 'addMember',
-                                sheet: 'simpanan',
-                                data: row.data
-                            });
-                    });
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            btn.textContent = "Suhu Selesai!";
-            addLog("--- PROSES SELESAI ---");
+            google.script.run
+                .withSuccessHandler(res => {
+                    btn.textContent = "Selesai!";
+                    addLog(`Berhasil memproses ${res.count} anggota dalam satu paket!`, 'text-green-400 font-bold');
+                    addLog("--- PROSES SELESAI ---");
+                    importData.forEach((_, i) => updateRowStatus(i, 'success'));
+                })
+                .withFailureHandler(err => {
+                    btn.disabled = false;
+                    btn.textContent = "Coba Lagi";
+                    addLog(`ERROR MASSAL: ${err}`, 'text-red-400');
+                })
+                .processMembersBulk(importData);
         }
 
         function updateRowStatus(idx, status) {
