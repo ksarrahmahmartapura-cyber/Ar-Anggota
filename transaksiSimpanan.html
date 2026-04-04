@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none; 
+        appearance: none;         
+        margin: 0;               
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield; 
+      }
+
+      .loading {
+        display: none;
+        margin-top: 20px;
+      }
+
+      .loading span {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin: 3px;
+        background-color: #4CAF50;
+        border-radius: 50%;
+        animation: loading 1.2s infinite ease-in-out;
+      }
+
+      .loading span:nth-child(1) { animation-delay: -0.24s; }
+      .loading span:nth-child(2) { animation-delay: -0.12s; }
+      .loading span:nth-child(3) { animation-delay: 0; }
+
+      @keyframes loading {
+        0%, 80%, 100% {
+          transform: scale(0);
+        }
+        40% {
+          transform: scale(1);
+        }
+      }
+
+      .output { 
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        display: none;
+      }
+
+      #inputTransaksi {
+        height: 85vh;
+      }
+      
+      h5 {
+        color: green;
+      }
+    </style>
+  </head>
+  <body style="height:100vh; background-color: antiquewhite;">
+    <div class="container" style="height:100%;">
+      <form id="formTransaksi" style="height:100vh;">
+        <div class="row align-items-center" style="height:100%;">
+          <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column justify-content-center" id="groupTransaksi">
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <button type="button" class="btn btn-primary mr-2" onclick="addRow()">+ Add</button>
+                <button type="submit" class="btn btn-success" id="submit">Submit</button>
+              </div>
+              <div class="d-flex justify-content-center mt-3">
+                <div class="loading" id="loading">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  <script>
+    var dataJSON = <?!= JSON.stringify(data) ?>;
+    var transactions = {};
+    
+    function generateUniqueId(){
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var uniqueId = '';
+      for (let i = 0; i < 6; i++) {
+        uniqueId += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return uniqueId;
+    }    
+    
+    function addRow(){
+      const uniqueId = generateUniqueId();
+      let container = document.getElementById('groupTransaksi');
+      let newRow = document.createElement('div');
+      newRow.id = `inputTransaksi${uniqueId}`;
+      newRow.innerHTML = `
+        <div class ="d-flex justify-content-between w-100 mb-3" id="codeTransactionGroup">
+          <div class="d-flex justify-content-start">                          
+            <input class="form-control w-50 ml-3" list="codeTransactionOptions" id="codeTransactionList${uniqueId}" placeholder="Transaksi" required>
+            <datalist id="codeTransactionOptions">
+              <option value="SW">Simpanan Wajib</option>
+              <option value="SS">Simpanan Sukarela</option>
+              <option value="SQ">Simpanan Qard</option>
+              <option value="KA">Keluar Anggota</option>
+            </datalist>              
+              <button type="button" class="btn btn-primary ml-2">Select</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(newRow);
+      const selectButton = newRow.querySelector('button');
+      selectButton.addEventListener('click', function(){
+        generateOutput(uniqueId);
+      });
+    }
+
+    function generateOutput(uniqueId) {
+      var uniqueId = uniqueId;
+      const codeInput = document.getElementById(`codeTransactionList${uniqueId}`).value;
+      const inputFields = document.getElementById(`inputTransaksi${uniqueId}`);
+
+      transactions[uniqueId] = {
+        codeTransaction: codeInput
+      }
+
+      try {
+        if(codeInput == "SW"){
+          inputFields.innerHTML = `
+            <div class="d-flex flex-column">
+              <div class="d-flex justify-content-center">
+                <h5>Simpanan Wajib</h5>                 
+              </div>
+              <div class="d-flex flex-row justify-content-between">
+                <div class="form-group col-sm-auto">
+                  <label for="noAnggota" class="font-weight-bold" id="labelAnggota${uniqueId}">Nama Anggota</label>
+                  <input class="form-control" list="datalistOptions" id="noAnggota${uniqueId}" placeholder="Type to search..." onchange="generateValue(this)" required>
+                  <datalist id="datalistOptions">
+                  </datalist>
+                </div>
+                <div id="hidden${uniqueId}" style="display: none;">
+                  <div class="form-group col-sm-4 mb-1">
+                    <label for="debitSimpananWajib${uniqueId}" class="font-weight-bold">Simpanan Wajib</label>
+                    <div class="input-group">
+                      <span class="input-group-text rounded-0">Rp</span>
+                      <input type="number" class="form-control" id="debitSimpananWajib${uniqueId}" name="debitSimpananWajib" min="50000" step="50000" placeholder="50.000" onchange="calculateSimpWajib(this)" required>
+                    </div>
+                  </div>
+                  <div class="form-group col-sm-4 mb-1">
+                    <label for="monthSimpananWajib${uniqueId}" class="font-weight-bold">Bulan Terakhir</label>
+                    <input type="date" class="form-control" id="monthSimpananWajib${uniqueId}" required>
+                  </div>
+                  <div class="form-group col-sm-3">
+                    <label for="payments${uniqueId}" class="font-weight-bold">Payment</label>
+                    <input class="form-control" list="listPayments" id="payments${uniqueId}" placeholder="Payment" required>
+                    <datalist id="listPayments">
+                        <option value="Cash">Cash</option>
+                        <option value="BSI">BSI</option>
+                        <option value="Muamalat">Muamalat</option>
+                        <option value="Bank Kalsel">Bank Kalsel</option>
+                    </datalist>
+                  </div>
+                </div>
+                <button type="button" class="close" id="close${uniqueId}" aria-label="Close" onclick="deleteTransaksi(this)">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+            `;
+        } else if(codeInput == "SS"){
+          inputFields.innerHTML = `
+          <div class="d-flex flex-column">
+            <div class="d-flex justify-content-center">
+              <h5>Simpanan Sukarela</h5> 
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+              <div class="form-group col-sm-auto">
+                <label for="noAnggota" class="font-weight-bold" id="labelAnggota${uniqueId}">Nama Anggota</label>
+                <input class="form-control" list="datalistOptions" id="noAnggota${uniqueId}" placeholder="Type to search..." onchange="generateValue(this)" required>
+                <datalist id="datalistOptions">
+                </datalist>
+              </div>
+              <div id="hidden${uniqueId}" style="display: none;">
+                <div class="form-group col-sm-4 mb-1">
+                  <label for="debitSimpananSukarela${uniqueId}" class="font-weight-bold">Debit</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="number" class="form-control" id="debitSimpananSukarela${uniqueId}" name="debitSimpananSukarela" min="1000000" step="1000000" placeholder="1.000.000">
+                  </div>                  
+                </div>
+                <div class="form-group col-sm-4 mb-1" id="groupKreditSukarela${uniqueId}" style="display: none;">
+                  <label for="kreditSimpananSukarela${uniqueId}" class="font-weight-bold">Kredit</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="number" class="form-control" id="kreditSimpananSukarela${uniqueId}" name="kreditSimpananSukarela" min="1000000" placeholder="1.000.000">
+                  </div>
+                </div>
+                <div class="form-group col-sm-3">
+                  <label for="payments${uniqueId}" class="font-weight-bold">Payment</label>
+                  <input class="form-control" list="listPayments" id="payments${uniqueId}" placeholder="Payment" required>
+                  <datalist id="listPayments">
+                    <option value="Cash">Cash</option>
+                    <option value="BSI">BSI</option>
+                    <option value="Muamalat">Muamalat</option>
+                    <option value="Bank Kalsel">Bank Kalsel</option>
+                  </datalist>
+                </div>              
+              </div>
+              <button type="button" class="close" id="close${uniqueId}" aria-label="Close" onclick="deleteTransaksi(this)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+          `;
+        } else if(codeInput == "SQ"){
+          inputFields.innerHTML = `
+          <div class="d-flex flex-column">
+            <div class="d-flex justify-content-center">
+              <h5>Simpanan Qard</h5> 
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+              <div class="form-group col-sm-auto">                
+                <label for="noAnggota" class="font-weight-bold" id="labelAnggota${uniqueId}">Nama Anggota</label>
+                <input class="form-control" list="datalistOptions" id="noAnggota${uniqueId}" placeholder="Type to search..." onchange="generateValue(this)" required>
+                <datalist id="datalistOptions">
+                </datalist>
+              </div>
+              <div id="hidden${uniqueId}" style="display: none;">
+                <div class="form-group col-sm-4 mb-1">
+                  <label for="debitSimpananQard${uniqueId}" class="font-weight-bold">Debit</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="number" class="form-control" id="debitSimpananQard${uniqueId}" name="debitSimpananQard" min="1" placeholder="100.000" onchange="calculateSimpQard(this)">
+                  </div>
+                  <div id="groupKreditQard${uniqueId}" style="display: none;">
+                    <label for="kreditSimpananQard${uniqueId}" class="font-weight-bold">Kredit</label>
+                    <div class="input-group">
+                      <span class="input-group-text rounded-0">Rp</span>
+                      <input type="number" class="form-control" id="kreditSimpananQard${uniqueId}" name="kreditSimpananQard" min="1" placeholder="100.000" onchange="calculateSimpQard(this)">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group col-sm-3">
+                  <label for="paymentsDebitSimpananQard${uniqueId}" class="font-weight-bold">Payment Debit</label>
+                  <input class="form-control" list="listPaymentsDebit" id="debitSimpananQard${uniqueId}Payments" placeholder="Payment">
+                  <datalist id="listPaymentsDebit">
+                    <option value="Cash">Cash</option>
+                    <option value="BSI">BSI</option>
+                    <option value="Muamalat">Muamalat</option>
+                    <option value="Bank Kalsel">Bank Kalsel</option>
+                  </datalist>
+                  <div id="groupPaymentsKreditQard${uniqueId}" style="display: none;">
+                    <label for="paymentsKreditSimpananQard${uniqueId}" class="font-weight-bold">Payment Kredit</label>
+                    <input class="form-control" list="listPaymentsKredit" id="kreditSimpananQard${uniqueId}Payments" placeholder="Payment">
+                    <datalist id="listPaymentsKredit">
+                      <option value="Cash">Cash</option>
+                      <option value="BSI">BSI</option>
+                      <option value="Muamalat">Muamalat</option>
+                      <option value="Bank Kalsel">Bank Kalsel</option>
+                    </datalist>
+                  </div>
+                </div>
+              </div>                
+                <button type="button" class="close" id="close${uniqueId}" aria-label="Close" onclick="deleteTransaksi(this)">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+          </div>
+          `;
+        } else if(codeInput == "KA"){
+          inputFields.innerHTML = `
+          <div class="d-flex flex-column">
+            <div class="d-flex justify-content-center">
+              <h5>Keluar Anggota</h5> 
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+              <div class="form-group col-sm-auto">                
+                <label for="noAnggota" class="font-weight-bold" id="labelAnggota${uniqueId}">Nama Anggota</label>
+                <input class="form-control" list="datalistOptions" id="noAnggota${uniqueId}" placeholder="Type to search..." onchange="generateValue(this)" required>
+                <datalist id="datalistOptions">
+                </datalist>
+              </div>
+              <div id="hidden${uniqueId}" style="display: none;">
+                <div class="form-group col-sm-4 mb-1">
+                  <label for="keluarAnggotaSimpPokok${uniqueId}" class="font-weight-bold">Simpanan Pokok</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="text" class="form-control" id="keluarAnggotaSimpPokok${uniqueId}" name="keluarAnggotaSimpPokok" disabled>
+                  </div>
+                  <label for="keluarAnggotaSimpWajib${uniqueId}" class="font-weight-bold">Simpanan Wajib</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="text" class="form-control" id="keluarAnggotaSimpWajib${uniqueId}" name="keluarAnggotaSimpWajib" disabled>
+                  </div>
+                </div>
+                <div class="form-group col-sm-4 mb-1">
+                  <label for="keluarAnggotaSimpSukarela${uniqueId}" class="font-weight-bold">Simpanan Sukarela</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="text" class="form-control" id="keluarAnggotaSimpSukarela${uniqueId}" name="keluarAnggotaSimpSukarela" disabled>
+                  </div>
+                  <label for="keluarAnggotaSimpQard${uniqueId}" class="font-weight-bold">Simpanan Qard</label>
+                  <div class="input-group">
+                    <span class="input-group-text rounded-0">Rp</span>
+                    <input type="text" class="form-control" id="keluarAnggotaSimpQard${uniqueId}" name="keluarAnggotaSimpQard" disabled>
+                  </div>
+                </div>
+                <div class="form-group col-sm-3">
+                  <label for="payments${uniqueId}" class="font-weight-bold">Payment</label>
+                  <input class="form-control" list="listPayments" id="payments${uniqueId}" placeholder="Payment" required>
+                  <datalist id="listPayments">
+                    <option value="Cash">Cash</option>
+                    <option value="BSI">BSI</option>
+                    <option value="Muamalat">Muamalat</option>
+                    <option value="Bank Kalsel">Bank Kalsel</option>
+                  </datalist>
+                </div>
+              </div>                
+                <button type="button" class="close" id="close${uniqueId}" aria-label="Close" onclick="deleteTransaksi(this)">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+          </div>
+          `;
+        }
+      } catch(error) {
+        console.log('Error Generate Transaction');
+        console.log(error);
+      }
+
+      var initialDropdown = document.getElementById('datalistOptions');
+      populateDropdown(initialDropdown);
+    }
+
+    function populateDropdown(dropdown){
+      dropdown.innerHTML = '';
+      let defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'Nama Anggota';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      dropdown.appendChild(defaultOption);
+      
+      Object.keys(dataJSON).forEach(function(key){
+        let option = document.createElement('option');
+        option.value = key;
+        option.textContent = dataJSON[key].nama;
+        dropdown.appendChild(option);
+      });
+    }
+
+    function generateValue(element){
+      let idMember = element.value;
+      let idTransaction = element.id.slice(-6);
+      let codeTransaction = transactions[idTransaction].codeTransaction;
+
+      let data = {
+        id: idMember,
+        transaction: idTransaction,
+        code: codeTransaction
+      }
+
+      function setInputValue(data){
+        if (data.code=="SW") {
+          return document.getElementById(`monthSimpananWajib${data.transaction}`).value = dataJSON[data.id].bulan;                         
+        } else if (data.code=="SS") {                  
+            if (dataJSON[data.id].sukarela != 0) {
+              document.getElementById(`groupKreditSukarela${data.transaction}`).style.display = 'block';
+              document.getElementById(`kreditSimpananSukarela${data.transaction}`).setAttribute("placeholder",dataJSON[data.id].sukarela.toLocaleString('id-ID'));
+              document.getElementById(`kreditSimpananSukarela${data.transaction}`).setAttribute("max",dataJSON[data.id].sukarela)                           
+              document.getElementById(`debitSimpananSukarela${data.transaction}`).required = false;                
+            } else {
+              document.getElementById(`groupKreditSukarela${data.transaction}`).style.display = 'none';
+              document.getElementById(`debitSimpananSukarela${data.transaction}`).required = true;
+            }
+          } else if (data.code=="SQ") {
+            if(dataJSON[data.id].qard != 0){
+              document.getElementById(`kreditSimpananQard${data.transaction}`).setAttribute("placeholder",dataJSON[data.id].qard.toLocaleString('id-ID'));
+              document.getElementById(`kreditSimpananQard${data.transaction}`).setAttribute("max",dataJSON[data.id].qard);
+              document.getElementById(`groupKreditQard${data.transaction}`).style.display = 'block';
+              document.getElementById(`groupPaymentsKreditQard${data.transaction}`).style.display = 'block';
+              // document.getElementById(`debitSimpananQard${data.transaction}`).required = false;             
+            } else {
+              document.getElementById(`groupKreditQard${data.transaction}`).style.display = 'none';
+              document.getElementById(`groupPaymentsKreditQard${data.transaction}`).style.display = 'none';
+              // document.getElementById(`debitSimpananQard${data.transaction}`).required = true;
+            }
+        } else if (codeTransaction=="KA") {
+          document.getElementById(`keluarAnggotaSimpPokok${data.transaction}`).value = dataJSON[data.id].pokok.toLocaleString('id-ID');
+          document.getElementById(`keluarAnggotaSimpWajib${data.transaction}`).value = dataJSON[data.id].wajib.toLocaleString('id-ID');
+          document.getElementById(`keluarAnggotaSimpSukarela${data.transaction}`).value = dataJSON[data.id].sukarela.toLocaleString('id-ID');
+          document.getElementById(`keluarAnggotaSimpQard${data.transaction}`).value = dataJSON[data.id].qard.toLocaleString('id-ID');
+        }
+      }
+      
+      setInputValue(data);        
+
+      let hidden = document.getElementById(`hidden${idTransaction}`);
+      document.getElementById(`labelAnggota${idTransaction}`).textContent = dataJSON[idMember].nama;
+      
+      if (hidden.className == '') {
+        hidden.className = "d-flex flex-row justify-content-between w-100";
+      } else {
+        const inputs = hidden.querySelectorAll('input');
+        inputs.forEach(input => {
+          input.value = '';
+        });
+        setInputValue(data);
+      }
+    }
+    
+    function calculateSimpWajib(element){
+      const simpWajib = 50000;
+      let valueInputSimpWajib = parseInt(element.value, 10);
+      let addedMonth = valueInputSimpWajib / simpWajib;
+      let idTransaction = element.id.slice(-6);
+      let idMember = document.getElementById(`noAnggota${idTransaction}`).value;
+      let monthValue = dataJSON[idMember].bulan;
+      
+      if(element.value == '' || element.value == 0){
+        let inputDate = document.getElementById(`monthSimpananWajib${idTransaction}`);
+        inputDate.value = monthValue;
+      } else if (valueInputSimpWajib % 50000 !== 0) {
+        element.value = '';
+      } else {          
+        let date = new Date(monthValue);
+        document.getElementById(`monthSimpananWajib${idTransaction}`).value = new Date(date.getFullYear(), date.getMonth() + addedMonth, date.getDate()).toLocaleDateString('en-CA');
+      } //date.getDate()).toLocaleDateString('en-CA');
+    }
+    
+    function calculateSimpQard(element) {
+      let idTransaction = element.id.slice(-6);
+      let idMember = document.getElementById(`noAnggota${idTransaction}`).value;
+      if(element.value > 0){
+        document.getElementById(`${element.id}Payments`).required = true;
+        if(element.id == `debitSimpananQard${idTransaction}`){
+          let simpQard = parseInt(element.value,10) + dataJSON[idMember].qard;
+          document.getElementById(`kreditSimpananQard${idTransaction}`).setAttribute("placeholder",simpQard.toLocaleString('id-ID'));
+          document.getElementById(`kreditSimpananQard${idTransaction}`).setAttribute("max",simpQard);
+          document.getElementById(`groupKreditQard${idTransaction}`).style.display = 'block';
+          document.getElementById(`groupPaymentsKreditQard${idTransaction}`).style.display = 'block';
+        }
+      } else {
+        document.getElementById(`${element.id}Payments`).required = false;
+      }
+    }
+
+    function deleteTransaksi(element) {
+      let idTransaction = element.id.slice(-6);        
+      delete transactions[idTransaction];        
+      document.getElementById(`inputTransaksi${idTransaction}`).remove();
+    }
+
+    document.getElementById('formTransaksi').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      for (const key in transactions) {          
+        if(key){
+          codeTransaction = transactions[key].codeTransaction;
+          let idMember = document.getElementById(`noAnggota${key}`).value;
+          
+          if(codeTransaction == "SW"){
+            let debitWajib = parseInt(document.getElementById(`debitSimpananWajib${key}`).value,10);
+            let date = new Date(document.getElementById(`monthSimpananWajib${key}`).value).toISOString();
+            let dateWajib = date.slice(0,10);
+            let payment = document.getElementById(`payments${key}`).value;
+
+            transactions[key] = {                
+              code: 'SW',
+              idMember: idMember,
+              debitWajib: debitWajib,
+              date: dateWajib,
+              payment: payment
+            }
+          } else if (codeTransaction == "SS"){
+            let debitSukarela = parseInt(document.getElementById(`debitSimpananSukarela${key}`).value,10) || 0;
+            let kreditSukarela = parseInt(document.getElementById(`kreditSimpananSukarela${key}`).value,10) || 0;
+            let payment = document.getElementById(`payments${key}`).value;
+
+            transactions[key] = {       
+              code: 'SS',
+              idMember: idMember,
+              debitSukarela: debitSukarela,
+              kreditSukarela: kreditSukarela,
+              payment: payment
+            }
+          } else if (codeTransaction == "SQ"){            
+            let debitQard = parseInt(document.getElementById(`debitSimpananQard${key}`).value,10) || 0;
+            let kreditQard = parseInt(document.getElementById(`kreditSimpananQard${key}`).value,10) || 0;
+            let paymentDebitQard = document.getElementById(`debitSimpananQard${key}Payments`).value || '';
+            let paymentKreditQard = document.getElementById(`kreditSimpananQard${key}Payments`).value || '';
+
+            transactions[key] = {                
+              code: 'SQ',
+              idMember: idMember,
+              debitQard: debitQard,
+              kreditQard: kreditQard,
+              paymentDebitQard: paymentDebitQard,
+              paymentKreditQard: paymentKreditQard
+            }
+          } else if (codeTransaction == "KA") {
+            let kaPokok = parseInt(document.getElementById(`keluarAnggotaSimpPokok${key}`).value.replace(/\./g, ''),10) || 0;
+            let kaWajib = parseInt(document.getElementById(`keluarAnggotaSimpWajib${key}`).value.replace(/\./g, ''),10) || 0;
+            let kaSukarela = parseInt(document.getElementById(`keluarAnggotaSimpSukarela${key}`).value.replace(/\./g, ''),10) || 0;
+            let kaQard = parseInt(document.getElementById(`keluarAnggotaSimpQard${key}`).value.replace(/\./g, ''),10) || 0;
+            let payment = document.getElementById(`payments${key}`).value;
+
+            transactions[key] = {                
+              code: 'KA',
+              idMember: idMember,
+              kaPokok: kaPokok,
+              kaWajib: kaWajib,
+              kaSukarela: kaSukarela,
+              kaQard: kaQard,
+              payment: payment
+            }
+          } else {
+            console.log("Error: Not Found Transaction");
+            google.script.host.close();
+          }
+        }else {
+          delete transactions[key];        
+          document.getElementById(`inputTransaksi${key}`).remove();
+        }
+      }
+
+      let sendData = {
+        method: 'transactionsSimp',
+        sheet: 'simpanan',
+        data : transactions
+        }
+
+      document.getElementById('loading').style.display = 'block';      
+      document.getElementById('submit').style.display = 'none';
+      google.script.run.withSuccessHandler(function() {
+        document.getElementById('loading').style.display = 'none';
+        google.script.host.close();
+      }).newTransaction(sendData);
+    });
+
+    document.addEventListener("DOMContentLoaded", addRow);
+  </script>
+  </body>
+</html>

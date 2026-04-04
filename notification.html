@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <base target="_top">
+    <style>
+      .green {
+        color: green;
+      }
+      .red {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid" style="background-color: antiquewhite">
+      <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="d-flex flex-column justify-content-around">
+          <div class="d-flex flex-column align-items-center " style="margin-bottom: 10%;">
+            <h2 id="title"></h2>
+              <div id="notif" style="margin-bottom: 5%; margin-top: 5%">
+              </div>
+              <button type="button" class="btn btn-success" onclick="closeWindow()">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function closeWindow(){
+        google.script.host.close();
+      }
+
+      var notif = <?!= JSON.stringify(data) ?>;
+      let allSuccess = true;
+
+      for (let key in notif) {
+          if (notif.hasOwnProperty(key)) {
+              if (notif[key].status !== 200) {
+                  allSuccess = false;
+                  break;
+              }
+          }
+      }
+
+      const statusMessage = document.getElementById('title');
+      if (allSuccess) {
+          statusMessage.textContent = 'SUCCESS';
+          statusMessage.className = 'green'; 
+      } else {
+          statusMessage.textContent = 'ERROR';
+          statusMessage.className = 'red';
+      }
+
+      const container = document.getElementById('notif');
+
+      for (let key in notif) {
+        if(notif.hasOwnProperty(key)){
+          const div = document.createElement('div');
+          div.className = 'd-flex flex-column align-items-center';
+
+          const h6Message1 = document.createElement('h6');
+          h6Message1.textContent = notif[key].message1;
+          div.appendChild(h6Message1);
+
+          if (notif[key].message2) {
+              const h6Message2 = document.createElement('h6');
+              h6Message2.textContent = notif[key].message2;
+              div.appendChild(h6Message2);
+          }
+        container.appendChild(div);
+        }
+      }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
