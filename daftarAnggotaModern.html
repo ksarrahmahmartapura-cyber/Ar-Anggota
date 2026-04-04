@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pendaftaran Anggota - Modern Wizard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    }
+    .step-dot.active {
+      background-color: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+    }
+    .step-dot.completed {
+      background-color: #22c55e;
+    }
+    .step-dot.completed::after {
+      content: '✓';
+      color: white;
+      font-size: 0.75rem;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 flex items-center justify-center">
+
+  <div class="w-full max-w-4xl glass-card rounded-3xl p-8 transition-all duration-500">
+    <!-- Header -->
+    <div class="mb-10 text-center">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Pendaftaran Anggota</h1>
+      <p class="text-gray-500">Lengkapi data Anda untuk bergabung dengan KKS Arrahmah</p>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="relative flex justify-between mb-12 max-w-2xl mx-auto">
+      <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2 z-0"></div>
+      <div id="progress-bar" class="absolute top-1/2 left-0 w-0 h-1 bg-green-500 -translate-y-1/2 z-0 transition-all duration-500"></div>
+      
+      <!-- Step 1 -->
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="step-dot active w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200 transition-colors" data-step="1"></div>
+        <span class="text-xs font-semibold mt-2 text-gray-500">Profil</span>
+      </div>
+      <!-- Step 2 -->
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200" data-step="2"></div>
+        <span class="text-xs font-semibold mt-2 text-gray-500">Alamat</span>
+      </div>
+      <!-- Step 3 -->
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200" data-step="3"></div>
+        <span class="text-xs font-semibold mt-2 text-gray-500">Pekerjaan</span>
+      </div>
+      <!-- Step 4 -->
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="step-dot w-8 h-8 rounded-full flex items-center justify-center bg-white border-2 border-gray-200" data-step="4"></div>
+        <span class="text-xs font-semibold mt-2 text-gray-500">Keuangan</span>
+      </div>
+    </div>
+
+    <form id="wizardForm" class="space-y-8">
+      <!-- Step 1: Profil Pribadi -->
+      <div id="step-1" class="step-content space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Tanggal Bergabung*</label>
+            <input type="date" id="tanggalBergabung" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Nama Lengkap*</label>
+            <input type="text" id="namaLengkap" required placeholder="Masukkan nama sesuai KTP" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">NIK (16 Digit)*</label>
+            <input type="number" id="nik" required placeholder="630XXXXXXXXXXXXX" oninput="if(this.value.length > 16) this.value = this.value.slice(0, 16)" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Tempat Lahir*</label>
+            <input type="text" id="tempatLahir" required placeholder="Kota Kelahiran" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Tanggal Lahir*</label>
+            <input type="date" id="tanggalLahir" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700 block">Jenis Kelamin*</label>
+            <div class="flex gap-4 p-1 bg-gray-100 rounded-xl w-fit">
+              <label class="cursor-pointer">
+                <input type="radio" name="jenisKelamin" value="Laki-Laki" checked class="hidden peer">
+                <div class="px-6 py-2 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm text-gray-500 font-medium transition-all">Laki-Laki</div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="jenisKelamin" value="Perempuan" class="hidden peer">
+                <div class="px-6 py-2 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm text-gray-500 font-medium transition-all">Perempuan</div>
+              </label>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Nomor Telpon*</label>
+            <input type="number" id="telpon" required placeholder="08XXXXXXXXXX" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Email*</label>
+            <input type="email" id="email" required placeholder="example@email.com" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all">
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Alamat -->
+      <div id="step-2" class="step-content hidden space-y-8">
+        <div class="space-y-4">
+          <h3 class="font-bold text-gray-700 border-b pb-2">Alamat Sesuai KTP</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <input type="text" id="alamatKTP" placeholder="Jl. Alamat Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="rtKTP" placeholder="RT" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+              <input type="number" id="rwKTP" placeholder="RW" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+            <input type="text" id="kelDesaKTP" placeholder="Kelurahan/Desa" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            <input type="text" id="kecKTP" placeholder="Kecamatan" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            <input type="number" id="kodePosKTP" placeholder="Kode Pos" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="font-bold text-gray-700">Alamat Tempat Tinggal Sekarang</h3>
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-green-600 font-bold hover:text-green-700">
+              <input type="checkbox" id="samaKTP" class="w-4 h-4 rounded text-green-500"> Sama dengan KTP
+            </label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <input type="text" id="alamatTinggal" placeholder="Jl. Alamat Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="rtTinggal" placeholder="RT" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+              <input type="number" id="rwTinggal" placeholder="RW" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+            <input type="text" id="kelDesaTinggal" placeholder="Kelurahan/Desa" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            <input type="text" id="kecTinggal" placeholder="Kecamatan" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+            <input type="number" id="kodePosTinggal" placeholder="Kode Pos" class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Keluarga & Pekerjaan -->
+      <div id="step-3" class="step-content hidden space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Keluarga -->
+          <div class="space-y-4">
+            <h3 class="font-bold text-gray-700 border-b pb-2">Keluarga Serumah</h3>
+            <input type="text" id="keluargaSerumah" placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+            <input type="text" id="hubunganKeluargaSerumah" placeholder="Hubungan (Istri/Anak/dll)" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+            <input type="number" id="telponKeluargaSerumah" placeholder="No Telpon" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+          </div>
+          <div class="space-y-4">
+            <h3 class="font-bold text-gray-700 border-b pb-2">Keluarga Tidak Serumah</h3>
+            <input type="text" id="keluargaTidakSerumah" placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+            <input type="number" id="telponKeluargaTidakSerumah" placeholder="No Telpon" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="font-bold text-gray-700 border-b pb-2">Detail Pekerjaan</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-gray-500 px-1">Jenis Pekerjaan*</label>
+              <input type="text" id="jenisPekerjaan" list="listJenisPekerjaan" required placeholder="Pilih atau Ketik Pekerjaan" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+              <datalist id="listJenisPekerjaan">
+                <option value="Aparatur Sipil Negara (ASN)">Aparatur Sipil Negara (ASN)</option>
+                <option value="Pegawai BUMN / BUMD">Pegawai BUMN / BUMD</option>
+                <option value="Karyawan Swasta">Karyawan Swasta</option>
+                <option value="Wirausaha">Wirausaha</option>
+                <option value="Freelancer">Freelancer</option>
+              </datalist>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-gray-500 px-1">Nama Kantor / Tempat Usaha*</label>
+              <input type="text" id="kantorPekerjaan" required placeholder="PT. XYZ / Toko ABC" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <input type="text" id="alamatKantor" placeholder="Alamat Kantor Lengkap" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="rtKantor" placeholder="RT" class="px-4 py-3 rounded-xl border border-gray-200 outline-none">
+              <input type="number" id="rwKantor" placeholder="RW" class="px-4 py-3 rounded-xl border border-gray-200 outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Keuangan & Finalisasi -->
+      <div id="step-4" class="step-content hidden space-y-8">
+        <div class="space-y-4">
+          <h3 class="font-bold text-gray-700 border-b pb-2 text-center">Data Rekening Bank</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <input type="text" id="namaBank" placeholder="Nama Bank (BSI/BCA/dll)" class="px-4 py-3 rounded-xl border border-gray-200 outline-none text-center">
+            <input type="number" id="noRekBank" placeholder="Nomor Rekening" class="px-4 py-3 rounded-xl border border-gray-200 outline-none text-center">
+            <input type="text" id="anBank" placeholder="Atas Nama" class="px-4 py-3 rounded-xl border border-gray-200 outline-none text-center">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-6 bg-blue-50 rounded-2xl space-y-4">
+            <h4 class="font-bold text-blue-800 text-center">Simpanan Pokok*</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="cursor-pointer">
+                <input type="radio" name="simpananPokok" value="300000" checked class="hidden peer">
+                <div class="py-3 rounded-xl bg-white border-2 border-transparent peer-checked:border-blue-500 peer-checked:text-blue-600 text-center font-bold text-gray-600 shadow-sm transition-all text-sm">Rp 300.000</div>
+              </label>
+              <div class="relative">
+                <input type="number" id="pokokLain" placeholder="Nominal Lain" class="w-full py-3 px-2 rounded-xl bg-white border-2 border-transparent focus:border-blue-500 outline-none text-center font-bold text-sm text-gray-700 shadow-sm">
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 bg-green-50 rounded-2xl space-y-4">
+            <h4 class="font-bold text-green-800 text-center">Simpanan Wajib*</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="cursor-pointer">
+                <input type="radio" name="simpananWajib" value="600000" checked class="hidden peer">
+                <div class="py-3 rounded-xl bg-white border-2 border-transparent peer-checked:border-green-500 peer-checked:text-green-600 text-center font-bold text-gray-600 shadow-sm transition-all text-sm">Rp 600.000</div>
+              </label>
+              <div class="relative">
+                <input type="number" id="wajibLain" placeholder="Nominal Lain" class="w-full py-3 px-2 rounded-xl bg-white border-2 border-transparent focus:border-green-500 outline-none text-center font-bold text-sm text-gray-700 shadow-sm">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="max-w-md mx-auto space-y-2">
+          <label class="text-sm font-bold text-gray-500 block text-center">Metode Pembayaran*</label>
+          <select id="akunPembayaran" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none text-center font-bold bg-white cursor-pointer hover:border-green-500 transition-all">
+            <option value="Cash">Cash</option>
+            <option value="BSI">BSI (Transfer)</option>
+            <option value="Muamalat">Muamalat (Transfer)</option>
+            <option value="Bank Kalsel">Bank Kalsel (Transfer)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="pt-6 flex justify-between gap-4">
+        <button type="button" id="prevBtn" class="px-8 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-all hidden">Kembali</button>
+        <button type="button" id="nextBtn" class="ml-auto px-10 py-3 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all shadow-lg shadow-green-200">Lanjutkan</button>
+        <button type="submit" id="submitBtn" class="ml-auto px-10 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all shadow-lg shadow-green-200 hidden">Daftar Sekarang</button>
+      </div>
+    </form>
+
+    <!-- Overlay Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
+      <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+      <p class="mt-4 font-bold text-gray-800">Memproses Pendaftaran...</p>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 4;
+    const form = document.getElementById('wizardForm');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressBar = document.getElementById('progress-bar');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    function updateStepIndicator() {
+      document.querySelectorAll('.step-dot').forEach((dot, index) => {
+        const stepNum = index + 1;
+        if (stepNum < currentStep) {
+          dot.classList.add('completed');
+          dot.classList.remove('active');
+        } else if (stepNum === currentStep) {
+          dot.classList.add('active');
+          dot.classList.remove('completed');
+        } else {
+          dot.classList.remove('active', 'completed');
+        }
+      });
+      progressBar.style.width = \`\${((currentStep - 1) / (totalSteps - 1)) * 100}%\`;
+    }
+
+    function showStep(step) {
+      document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(\`step-\${step}\`).classList.remove('hidden');
+      
+      prevBtn.classList.toggle('hidden', step === 1);
+      nextBtn.classList.toggle('hidden', step === totalSteps);
+      submitBtn.classList.toggle('hidden', step !== totalSteps);
+      
+      updateStepIndicator();
+    }
+
+    nextBtn.addEventListener('click', () => {
+      // Basic validation
+      const currentInputs = document.getElementById(\`step-\${currentStep}\`).querySelectorAll('[required]');
+      let isValid = true;
+      currentInputs.forEach(input => {
+        if (!input.value) {
+          input.classList.add('border-red-500');
+          isValid = false;
+        } else {
+          input.classList.remove('border-red-500');
+        }
+      });
+
+      if (isValid && currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+
+    // Auto-fill address Tinggal if "Sama dengan KTP" is checked
+    document.getElementById('samaKTP').addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.getElementById('alamatTinggal').value = document.getElementById('alamatKTP').value;
+        document.getElementById('rtTinggal').value = document.getElementById('rtKTP').value;
+        document.getElementById('rwTinggal').value = document.getElementById('rwKTP').value;
+        document.getElementById('kelDesaTinggal').value = document.getElementById('kelDesaKTP').value;
+        document.getElementById('kecTinggal').value = document.getElementById('kecKTP').value;
+        document.getElementById('kodePosTinggal').value = document.getElementById('kodePosKTP').value;
+      }
+    });
+
+    // Set Default Join Date
+    document.getElementById('tanggalBergabung').value = new Date().toISOString().split('T')[0];
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loadingOverlay.classList.remove('hidden');
+
+      const formData = {
+        tanggalBergabung: document.getElementById('tanggalBergabung').value,
+        namaAnggota: document.getElementById('namaLengkap').value,
+        nik: document.getElementById('nik').value,
+        tempatLahir: document.getElementById('tempatLahir').value,
+        tanggalLahir: document.getElementById('tanggalLahir').value,
+        jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
+        telponAnggota: "'" + document.getElementById('telpon').value,
+        email: document.getElementById('email').value,
+        alamatKTP: `${document.getElementById('alamatKTP').value} RT.${document.getElementById('rtKTP').value} RW.${document.getElementById('rwKTP').value} Kel.${document.getElementById('kelDesaKTP').value} Kec.${document.getElementById('kecKTP').value} ${document.getElementById('kodePosKTP').value}`,
+        alamatTinggal: `${document.getElementById('alamatTinggal').value} RT.${document.getElementById('rtTinggal').value} RW.${document.getElementById('rwTinggal').value} Kel.${document.getElementById('kelDesaTinggal').value} Kec.${document.getElementById('kecTinggal').value} ${document.getElementById('kodePosTinggal').value}`,
+        keluargaSerumah: document.getElementById('keluargaSerumah').value,
+        hubunganKeluargaSerumah: document.getElementById('hubunganKeluargaSerumah').value,
+        telponKeluargaSerumah: "'" + document.getElementById('telponKeluargaSerumah').value,
+        keluargaTidakSerumah: document.getElementById('keluargaTidakSerumah').value,
+        telponKeluargaTidakSerumah: "'" + document.getElementById('telponKeluargaTidakSerumah').value,
+        jenisPekerjaan: document.getElementById('jenisPekerjaan').value,
+        kantorPekerjaan: document.getElementById('kantorPekerjaan').value,
+        alamatKantor: `${document.getElementById('alamatKantor').value} RT.${document.getElementById('rtKantor').value} RW.${document.getElementById('rwKantor').value}`,
+        namaBank: document.getElementById('namaBank').value,
+        noRekBank: document.getElementById('noRekBank').value,
+        anBank: document.getElementById('anBank').value,
+        simpananPokok: document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value,
+        simpananWajib: document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value,
+        akunPembayaran: document.getElementById('akunPembayaran').value
+      };
+
+      // Backend call to the user provided URL (simulated as the target spreadsheet logic)
+      google.script.run.withSuccessHandler(() => {
+        loadingOverlay.innerHTML = `
+          <div class="text-green-500 text-6xl mb-4">✓</div>
+          <p class="font-bold text-gray-800">Pendaftaran Berhasil!</p>
+          <button onclick="google.script.host.close()" class="mt-6 px-6 py-2 bg-green-600 text-white rounded-xl">Tutup</button>
+        `;
+      }).newTransaction({
+        method: 'addMember',
+        sheet: 'simpanan',
+        data: formData
+      });
+    });
+  </script>
+</body>
+</html>
