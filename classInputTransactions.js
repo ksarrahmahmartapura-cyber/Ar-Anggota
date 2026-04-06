@@ -48,64 +48,62 @@ class InputTransactions {
       let data = this.data;
       let date = new Date();
       let formattedDate = Utilities.formatDate(date, "GMT+8", "dd/MM/yyyy");
+      let rowsToAppend = [];
 
       for (const key in data) {
+        let entry = data[key];
         if (data[key].code === "SW") {
-
-          this.ssTransactions.appendRow([
-            , formattedDate, 'SW', , data[key].idMember, , , data[key].debitWajib / this.simpananWajib, data[key].date, 'Simpanan Wajib', data[key].debitWajib, , this.saldoSimpanan, data[key].payment
+          rowsToAppend.push([
+            null, formattedDate, 'SW', null, entry.idMember, null, null, entry.debitWajib / this.simpananWajib, entry.date, 'Simpanan Wajib', entry.debitWajib, null, this.saldoSimpanan, entry.payment
           ]);
-
         } else if (data[key].code == "SS") {
-
           if (data[key].debitSukarela > 0 && data[key].kreditSukarela == 0) {
-            this.ssTransactions.appendRow([
-              , formattedDate, 'SS', , data[key].idMember, , , , , 'Simpanan Sukarela', data[key].debitSukarela, , this.saldoSimpanan, data[key].payment
+            rowsToAppend.push([
+              null, formattedDate, 'SS', null, entry.idMember, null, null, null, null, 'Simpanan Sukarela', entry.debitSukarela, null, this.saldoSimpanan, entry.payment
             ]);
           } else if (data[key].kreditSukarela > 0 && data[key].debitSukarela == 0) {
-            this.ssTransactions.appendRow([
-              , formattedDate, 'SS', , data[key].idMember, , , , , 'Penarikan Simpanan Sukarela', , data[key].kreditSukarela, this.saldoSimpanan, data[key].payment
+            rowsToAppend.push([
+              null, formattedDate, 'SS', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Sukarela', null, entry.kreditSukarela, this.saldoSimpanan, entry.payment
             ]);
           }
         } else if (data[key].code == "SQ") {
-
           if (data[key].kreditQard == 0) {
-            this.ssTransactions.appendRow([
-              , formattedDate, 'SQ', , data[key].idMember, , , , , 'Simpanan Qard', data[key].debitQard, , this.saldoSimpanan, data[key].paymentDebitQard
+            rowsToAppend.push([
+              null, formattedDate, 'SQ', null, entry.idMember, null, null, null, null, 'Simpanan Qard', entry.debitQard, null, this.saldoSimpanan, entry.paymentDebitQard
             ]);
-            continue;
-          } else if (data[key].debitQard == 0) {
-            this.ssTransactions.appendRow([
-              , formattedDate, 'SQ', , data[key].idMember, , , , , 'Penarikan Simpanan Qard', , data[key].kreditQard, this.saldoSimpanan, data[key].paymentKreditQard
+          } else if (entry.debitQard == 0) {
+            rowsToAppend.push([
+              null, formattedDate, 'SQ', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Qard', null, entry.kreditQard, this.saldoSimpanan, entry.paymentKreditQard
             ]);
-            continue;
+          } else {
+            rowsToAppend.push([
+              null, formattedDate, 'SQ', null, entry.idMember, null, null, null, null, 'Simpanan Qard', entry.debitQard, null, this.saldoSimpanan, entry.paymentDebitQard
+            ]);
+            rowsToAppend.push([
+              null, formattedDate, 'SQ', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Qard', null, entry.kreditQard, this.saldoSimpanan, entry.paymentKreditQard
+            ]);
           }
-
-          this.ssTransactions.appendRow([
-            , formattedDate, 'SQ', , data[key].idMember, , , , , 'Simpanan Qard', data[key].debitQard, , this.saldoSimpanan, data[key].paymentDebitQard
-          ]);
-          this.ssTransactions.appendRow([
-            , formattedDate, 'SQ', , data[key].idMember, , , , , 'Penarikan Simpanan Qard', , data[key].kreditQard, this.saldoSimpanan, data[key].paymentKreditQard
-          ]);
-
         } else if (data[key].code == "KA") {
-          this.ssTransactions.appendRow([
-            , formattedDate, 'SP', , data[key].idMember, , , , , 'Penarikan Simpanan Pokok', , data[key].kaPokok, this.saldoSimpanan, data[key].payment
+          rowsToAppend.push([
+            null, formattedDate, 'SP', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Pokok', null, entry.kaPokok, this.saldoSimpanan, entry.payment
           ]);
-          this.ssTransactions.appendRow([
-            , formattedDate, 'SW', , data[key].idMember, , , , , 'Penarikan Simpanan Wajib', , data[key].kaWajib, this.saldoSimpanan, data[key].payment
+          rowsToAppend.push([
+            null, formattedDate, 'SW', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Wajib', null, entry.kaWajib, this.saldoSimpanan, entry.payment
           ]);
-
-          data[key].kaSukarela > 0 &&
-            this.ssTransactions.appendRow([
-              , formattedDate, 'SS', , data[key].idMember, , , , , 'Penarikan Simpanan Sukarela', , data[key].kaSukarela, this.saldoSimpanan, data[key].payment
+          if (entry.kaSukarela > 0) {
+            rowsToAppend.push([
+              null, formattedDate, 'SS', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Sukarela', null, entry.kaSukarela, this.saldoSimpanan, entry.payment
             ]);
-          data[key].kaQard > 0 &&
-            this.ssTransactions.appendRow([
-              , formattedDate, 'SQ', , data[key].idMember, , , , , 'Penarikan Simpanan Qard', , data[key].kaQard, this.saldoSimpanan, data[key].payment
+          }
+          if (entry.kaQard > 0) {
+            rowsToAppend.push([
+              null, formattedDate, 'SQ', null, entry.idMember, null, null, null, null, 'Penarikan Simpanan Qard', null, entry.kaQard, this.saldoSimpanan, entry.payment
             ]);
-
+          }
         }
+      }
+      if (rowsToAppend.length > 0) {
+        this.ssTransactions.getRange(this.ssTransactions.getLastRow() + 1, 1, rowsToAppend.length, 14).setValues(rowsToAppend);
       }
     } else if (this.method === 'addPending') {
       this.ssPending.appendRow([
