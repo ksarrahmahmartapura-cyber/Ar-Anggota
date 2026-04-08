@@ -34,9 +34,9 @@ function fnHome() {
 }
 
 function doGet() {
-  var template = HtmlService.createTemplateFromFile('daftarAnggotaModern');
+  var template = HtmlService.createTemplateFromFile('landingPage');
   return template.evaluate()
-    .setTitle('Pendaftaran Anggota Modern')
+    .setTitle('KKS Arrahmah - Keuangan Syariah Martapura')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
