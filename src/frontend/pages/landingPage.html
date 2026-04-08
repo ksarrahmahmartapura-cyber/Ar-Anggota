@@ -700,8 +700,10 @@
     }
     
     function openRegistrationForm() {
-      const formUrl = 'daftarAnggotaModern.html';
-      window.open(formUrl, '_blank');
+      // Use the same deployment but with form mode
+      google.script.run.withSuccessHandler(function(url) {
+        window.open(url, '_blank');
+      }).getFormUrl();
     }
     
     // Initialize

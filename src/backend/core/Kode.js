@@ -66,3 +66,7 @@ function processBatchApproval(indices) {
   const processor = new InputTransactions({ method: 'bulk', data: {} });
   return processor.approvePendingBulk(indices);
 }
+
+function getFormUrl() {
+  return ScriptApp.getService().getUrl();
+}

@@ -70,6 +70,10 @@ function processBatchApproval(indices) {
   return processor.approvePendingBulk(indices);
 }
 
+function getFormUrl() {
+  return ScriptApp.getService().getUrl();
+}
+
 // ===== changeScreen.js =====
 
 class sideMenu {
