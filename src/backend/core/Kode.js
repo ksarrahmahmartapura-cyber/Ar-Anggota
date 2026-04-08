@@ -30,10 +30,14 @@ function fnHome() {
   SpreadsheetApp.getUi().showModalDialog(htmlOutput, ' ');
 }
 
-function doGet() {
-  var template = HtmlService.createTemplateFromFile('landingPage');
+function doGet(e) {
+  var formMode = e && e.parameter && e.parameter.form;
+  var templateFile = formMode ? 'daftarAnggotaModern' : 'landingPage';
+  var title = formMode ? 'Pendaftaran Anggota - KKS Arrahmah' : 'KKS Arrahmah - Keuangan Syariah Martapura';
+  
+  var template = HtmlService.createTemplateFromFile(templateFile);
   return template.evaluate()
-    .setTitle('KKS Arrahmah - Keuangan Syariah Martapura')
+    .setTitle(title)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -68,5 +72,6 @@ function processBatchApproval(indices) {
 }
 
 function getFormUrl() {
-  return ScriptApp.getService().getUrl();
+  var baseUrl = ScriptApp.getService().getUrl();
+  return baseUrl + (baseUrl.indexOf('?') > -1 ? '&' : '?') + 'form=1';
 }
