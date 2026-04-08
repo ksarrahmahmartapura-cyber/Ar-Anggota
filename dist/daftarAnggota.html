@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Anggota</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none; 
+        appearance: none;         
+        margin: 0;               
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield; 
+    }
+
+    .loading {
+    display: none;
+    margin-top: 20px;
+    }
+
+    .loading span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 3px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    animation: loading 1.2s infinite ease-in-out;
+    }
+
+    .loading span:nth-child(1) { animation-delay: -0.24s; }
+    .loading span:nth-child(2) { animation-delay: -0.12s; }
+    .loading span:nth-child(3) { animation-delay: 0; }
+
+    @keyframes loading {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+    }
+
+    .h6 {
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .border-5 {
+        padding: 0;
+    }
+
+    .form-control {
+        font-size: 10px;
+    }
+
+    .form-check-label {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <form id="daftarAnggota" style="background-color:antiquewhite;">
+      <div class="d-flex align-items-center border border-5 rounded" style="height:100vh;">
+        <div class="col">
+          <div class="d-flex justify-content-evenly">
+            <div class="col border border-5 mr-1 rounded">
+              <h6 class="text-center font-weight-bold">DATA ANGGOTA</h6>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-6">
+                    <label for="tanggalBergabung" class="h6">Tanggal Bergabung*</label>
+                  </div>
+                  <div class="col">
+                    <input type="date" class="form-control form-control-sm text-center" id="tanggalBergabung" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1" style="font-size: 12px;">
+                  <div class="col-5">
+                    <label for="namaLengkap" class="h6">Nama Lengkap*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="namaLengkap" placeholder="Nama Lengkap" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="nik" class="h6">NIK*</label>
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control form-control-sm text-center" id="nik" placeholder="1234560101010000" 
+                    oninput="limitDigits(this,16)" min="1" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1" style="font-size: 12px;">
+                  <div class="col-5">
+                    <label for="tempatLahir" class="h6">Tempat Lahir*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="tempatLahir" placeholder="Tempat Lahir" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-6">
+                    <label for="tanggalLahir" class="h6">Tanggal Lahir*</label>
+                  </div>
+                  <div class="col">
+                    <input type="date" class="form-control form-control-sm text-center" id="tanggalLahir" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="jenisKelamin" class="h6">Jenis Kelamin*</label>
+                  </div>
+                  <div class="col">
+                    <div class="row justify-content-around">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="jenisKelamin" id="laki" value="Laki-Laki" checked>
+                        <label class="form-check-label" for="laki">
+                          Laki-Laki
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="jenisKelamin" id="perempuan" value="Perempuan">
+                        <label class="form-check-label" for="perempuan">
+                          Perempuan
+                        </label>
+                      </div>
+                    </div>                                  
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="telpon" class="h6">Nomor Telpon*</label>
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control form-control-sm text-center" id="telpon" placeholder="081234567890" 
+                    oninput="limitDigits(this,13)" min="1" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="email" class="h6">Email*</label>
+                  </div>
+                  <div class="col">
+                    <input type="email" class="form-control form-control-sm text-center" id="email" placeholder="nama@email.com" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col">
+                    <label for="alamatKTP" class="h6">Alamat KTP*</label>              
+                    <div class="d-flex justify-content-start">
+                      <div class="form-row">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="alamatKTP" placeholder="Jl. Alamat KTP Blok-A No.123" required>
+                        </div>
+                        <div class="col-2">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rtKTP" placeholder="RT" 
+                          oninput="limitDigits(this,3)" min="0" required>
+                        </div>
+                        <div class="col-2">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rwKTP" placeholder="RW" 
+                          oninput="limitDigits(this,3)" min="0" required>
+                        </div>               
+                      </div>                
+                    </div>
+                    <div class="d-flex justify-content-start">
+                      <div class="form-row">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="kelDesaKTP" placeholder="Kelurahan / Desa" required>
+                        </div>
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="kecKTP" placeholder="Kecamatan" required>
+                        </div>
+                        <div class="col-3">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="kodePosKTP" placeholder="70123" oninput="limitDigits(this,5)" min="0" required>
+                        </div>               
+                      </div>                
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col">
+                    <label for="alamatTinggal" class="h6">Alamat Tinggal*</label>              
+                    <div class="d-flex justify-content-start">
+                      <div class="form-row">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="alamatTinggal" placeholder="Jl. Alamat Tinggal Blok-A No.123" required>
+                        </div>
+                        <div class="col-2">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rtTinggal" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
+                        </div>
+                        <div class="col-2">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rwTinggal" placeholder="RW" 
+                          oninput="limitDigits(this,3)" min="0" required>
+                        </div>               
+                      </div>                
+                    </div>
+                    <div class="d-flex justify-content-start">
+                      <div class="form-row">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="kelDesaTinggal" placeholder="Kelurahan / Desa" required>
+                        </div>
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="kecTinggal" placeholder="Kecamatan" required>
+                        </div>
+                        <div class="col-3">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="kodePosTinggal" placeholder="70123" oninput="limitDigits(this,5)" min="0" required>
+                        </div>               
+                      </div>
+                    </div>
+                  </div>
+                </div>                         
+              </div>
+            </div>
+            <div class="col border border-5 mr-1 rounded">
+              <h6 class="text-center font-weight-bold">KELUARGA SERUMAH</h6>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="keluargaSerumah" class="h6">Nama Lengkap</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="keluargaSerumah" placeholder="Nama Lengkap">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="hubunganKeluargaSerumah" class="h6">Hubungan</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="hubunganKeluargaSerumah" placeholder="Suami/Istri/Orang Tua">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1 mb-1">
+                  <div class="col-5">
+                    <label for="telponKeluargaSerumah" class="h6">Nomor Telpon</label>
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control form-control-sm text-center" id="telponKeluargaSerumah" placeholder="081234567890" oninput="limitDigits(this,13)" min="0">
+                  </div>
+                </div>
+              </div>
+              <h6 class="text-center font-weight-bold">KELUARGA TIDAK SERUMAH</h6>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="keluargaTidakSerumah" class="h6">Nama Lengkap</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="keluargaTidakSerumah" placeholder="Nama Lengkap">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1 mb-1">
+                  <div class="col-5">
+                    <label for="telponKeluarga" class="h6">Nomor Telpon</label>
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control form-control-sm text-center" id="telponKeluargaTidakSerumah" placeholder="081234567890" oninput="limitDigits(this,13)" min="0">
+                  </div>
+                </div>
+              </div>
+              <h6 class="text-center font-weight-bold">DETAIL PEKERJAAN</h6>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="jenisPekerjaan" class="h6">Pekerjaan*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="jenisPekerjaan" list="listJenisPekerjaan" placeholder="Wirausaha" required>
+                    <datalist id="listJenisPekerjaan">
+                      <option value="Aparatur Sipil Negara (ASN)">Aparatur Sipil Negara (ASN)</option>
+                      <option value="Pegawai BUMN / BUMD">Pegawai BUMN / BUMD</option>
+                      <option value="Karyawan Swasta">Karyawan Swasta</option>
+                      <option value="Wirausaha">Wirausaha</option>
+                      <option value="Guru / Dosen">Guru / Dosen</option>
+                      <option value="Dokter">Dokter</option>
+                      <option value="Petani">Petani</option>
+                      <option value="Nelayan">Nelayan</option>
+                      <option value="Freelancer">Freelancer</option>
+                      <option value="Pelajar / Mahasiswa">Pelajar / Mahasiswa</option>
+                      <option value="Tidak Ada">Tidak Ada</option>
+                    </datalist>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="kantorPekerjaan" class="h6">Nama Kantor*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="kantorPekerjaan" placeholder="PT. Nama Perusahaan" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col">
+                    <label for="alamatKantor" class="h6">Alamat Kantor*</label>              
+                    <div class="d-flex justify-content-start">
+                      <div class="form-row">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="alamatKantor" placeholder="Jl. Alamat Kantor Blok-A No.123" required>
+                        </div>
+                        <div class="col-2">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rtKantor" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
+                        </div>
+                        <div class="col-2">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rwKantor" placeholder="RW" oninput="limitDigits(this,3)" min="0" required>
+                        </div>               
+                      </div>                
+                    </div>
+                    <div class="d-flex justify-content-start">
+                      <div class="form-row">
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="kelDesaKantor" placeholder="Kelurahan / Desa" required>
+                        </div>
+                        <div class="col">
+                          <input type="text" class="form-control form-control-sm mb-1" id="kecKantor" placeholder="Kecamatan" required>
+                        </div>
+                        <div class="col-3">
+                          <input type="number" class="form-control form-control-sm text-center mb-1" id="kodePosKantor" placeholder="70123" oninput="limitDigits(this,5)" min="0" required>
+                        </div>               
+                      </div>                
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col border border-5 rounded">
+              <h6 class="text-center font-weight-bold">DATA BANK</h6>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="namaBank" class="h6">Nama Bank*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="namaBank" placeholder="BSI/MANDIRI/BCA/BNI" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="noRekBank" class="h6">No Rekening*</label>
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control form-control-sm text-center" id="noRekBank" placeholder="123456789" min="0" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1 mb-1">
+                  <div class="col-5">
+                    <label for="anBank" class="h6">Atas Nama*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="anBank" placeholder="Nama Nasabah" required>
+                  </div>
+                </div>
+              </div>
+              <h6 class="text-center font-weight-bold">PEMBAYARAN SIMPANAN</h6>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-3">
+                    <label for="simpananPokok" class="h6">Pokok*</label>
+                  </div>
+                  <div class="col">
+                    <div class="row justify-content-around">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="simpananPokok" id="pokok" value="300000" onchange="handleRadioChange(this)" checked>
+                        <label class="form-check-label" for="pokok">
+                          Rp 300.000
+                        </label>
+                      </div>
+                      <div class="form-check col-5">
+                        <input class="form-check-input" type="radio" name="simpananPokok" id="pokokLain" onchange="handleRadioChange(this)">
+                        <input type="number" class="form-control form-control-sm text-center" id="pokokLainInput" placeholder="400.000" onchange="updateRadioValue(this)" min="1" disabled>
+                      </div>
+                    </div>                                  
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-3">
+                    <label for="simpananWajib" class="h6">Wajib*</label>
+                  </div>
+                  <div class="col">
+                    <div class="row justify-content-around">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="simpananWajib" id="wajib" value="600000" onchange="handleRadioChange(this)" checked>
+                        <label class="form-check-label" for="wajib">
+                          Rp 600.000
+                        </label>
+                      </div>
+                      <div class="form-check col-5">
+                        <input class="form-check-input" type="radio" name="simpananWajib" id="wajibLain" onchange="handleRadioChange(this)">
+                        <input type="number" class="form-control form-control-sm text-center" id="wajibLainInput" placeholder="800.000" onchange="updateRadioValue(this)" min="1" disabled>
+                      </div>
+                    </div>                                  
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center mt-1">
+                  <div class="col-5">
+                    <label for="akunPembayaran" class="h6">Pembayaran*</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control form-control-sm text-center" id="akunPembayaran" list="listPayments" placeholder="Cash" required>
+                    <datalist id="listPayments">
+                      <option value="Cash">Cash</option>
+                      <option value="BSI">BSI</option>
+                      <option value="Muamalat">Muamalat</option>
+                      <option value="Bank Kalsel">Bank Kalsel</option>
+                    </datalist>
+                  </div>
+                </div>
+              </div>
+              <div class="row justify-content-center mt-5">
+                <button type="submit" class="btn btn-primary pr-3" id="submit">Submit</button>
+                <div class="row align-items-center">
+                <div class="loading" id="loading">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>        
+          
+        </div>
+      </div>    
+    </form>
+  </div>
+<script>  
+  function setDefaultTanggal() {
+    const tanggalInput = document.getElementById("tanggalBergabung");
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+    tanggalInput.value = formattedDate; 
+  }
+  window.onload = setDefaultTanggal;
+</script>
+<script>
+  function limitDigits(input, maxLength) {
+    if (input.value.length > maxLength) {
+      input.value = input.value.slice(0, maxLength);
+    }
+  }
+  function updateRadioValue(radioElement) {
+    var inputId = radioElement.id;
+    var valueId = inputId.substr(0,5);
+    document.getElementById(valueId + "Lain").value = document.getElementById(inputId).value;
+  }
+  
+  function handleRadioChange(radioElement) {
+    var inputId = radioElement.id;
+    var condition = inputId.substr(-4);
+
+    if (condition == "Lain"){
+      var inputNumber = document.getElementById(inputId + "Input") ;
+      inputNumber.disabled = false;
+      inputId.value = inputNumber.value;
+
+    } else {
+      var inputNumber = document.getElementById(inputId + "LainInput");
+      inputNumber.disabled = true;
+      inputId.value = " ";
+    }
+  }
+</script>
+<script>
+  document.getElementById('daftarAnggota').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      var tanggalBergabung = document.getElementById('tanggalBergabung').value;
+      var namaAnggota = document.getElementById('namaLengkap').value;      
+      var nik = document.getElementById('nik').value;
+      var tempatLahir = document.getElementById('tempatLahir').value;
+      var tanggalLahir = document.getElementById('tanggalLahir').value;
+      var jenisKelamin = document.querySelector('input[name="jenisKelamin"]:checked').value;
+      var telponAnggota = document.getElementById('telpon').value;
+      var email = document.getElementById('email').value;      
+      var jalanKTP = document.getElementById('alamatKTP').value;
+      var rtKTP = document.getElementById('rtKTP').value;
+      var rwKTP = document.getElementById('rwKTP').value;
+      var kelDesaKTP = document.getElementById('kelDesaKTP').value;
+      var kecKTP = document.getElementById('kecKTP').value;
+      var kodePosKTP = document.getElementById('kodePosKTP').value;
+      var jalanTinggal = document.getElementById('alamatTinggal').value;
+      var rtTinggal = document.getElementById('rtTinggal').value;
+      var rwTinggal = document.getElementById('rwTinggal').value;
+      var kelDesaTinggal = document.getElementById('kelDesaTinggal').value;
+      var kecTinggal = document.getElementById('kecTinggal').value;
+      var kodePosTinggal = document.getElementById('kodePosTinggal').value;
+      var keluargaSerumah = document.getElementById('keluargaSerumah').value;
+      var hubunganKeluargaSerumah = document.getElementById('hubunganKeluargaSerumah').value;
+      var telponKeluargaSerumah = document.getElementById('telponKeluargaSerumah').value;
+      var keluargaTidakSerumah = document.getElementById('keluargaTidakSerumah').value;      
+      var telponKeluargaTidakSerumah = document.getElementById('telponKeluargaTidakSerumah').value;
+      var jenisPekerjaan = document.getElementById('jenisPekerjaan').value;
+      var kantorPekerjaan = document.getElementById('kantorPekerjaan').value;
+      var jalanKantor = document.getElementById('alamatKantor').value;
+      var rtKantor = document.getElementById('rtKantor').value;
+      var rwKantor = document.getElementById('rwKantor').value;
+      var kelDesaKantor = document.getElementById('kelDesaKantor').value;
+      var kecKantor = document.getElementById('kecKantor').value;
+      var kodePosKantor = document.getElementById('kodePosKantor').value;
+      var namaBank = document.getElementById('namaBank').value;
+      var noRekBank = document.getElementById('noRekBank').value;
+      var anBank = document.getElementById('anBank').value;
+      var simpananPokok = document.querySelector('input[name="simpananPokok"]:checked').value;
+      var simpananWajib = document.querySelector('input[name="simpananWajib"]:checked').value;
+      var akunPembayaran = document.getElementById('akunPembayaran').value;
+            
+      document.getElementById('loading').style.display = 'block'; // Show loading indicator        
+      document.getElementById('submit').style.display = 'none';
+      google.script.run.withSuccessHandler(function() {          
+        document.getElementById('loading').style.display = 'none'; // Hide loading indicator
+        google.script.host.close();
+      }).newTransaction({
+        method: 'addMember',
+        sheet: 'simpanan',
+        data: {
+        tanggalBergabung: tanggalBergabung, 
+        namaAnggota: namaAnggota, 
+        nik: nik, 
+        tempatLahir: tempatLahir, 
+        tanggalLahir: tanggalLahir, 
+        jenisKelamin: jenisKelamin,
+        telponAnggota: "'"+ telponAnggota,
+        email: email,
+        alamatKTP: jalanKTP + ' RT. ' + rtKTP + ' RW. ' + rwKTP + ' Kel/Desa ' + kelDesaKTP + ' Kec. ' + kecKTP + ' ' + kodePosKTP,
+        alamatTinggal: jalanTinggal + ' RT. ' + rtTinggal + ' RW. ' + rwTinggal + ' Kel/Desa ' + kelDesaTinggal + ' Kec. ' + kecTinggal + ' ' + kodePosTinggal,
+        keluargaSerumah: keluargaSerumah,
+        hubunganKeluargaSerumah: hubunganKeluargaSerumah,
+        telponKeluargaSerumah: "'"+ telponKeluargaSerumah,
+        keluargaTidakSerumah: keluargaTidakSerumah,        
+        telponKeluargaTidakSerumah: "'" + telponKeluargaTidakSerumah,
+        jenisPekerjaan: jenisPekerjaan,
+        kantorPekerjaan: kantorPekerjaan,
+        alamatKantor: jalanKantor + ' RT. ' + rtKantor + ' RW. ' + rwKantor + ' Kel/Desa ' + kelDesaKantor + ' Kec. ' + kecKantor + ' ' + kodePosKantor,
+        namaBank: namaBank,
+        noRekBank: noRekBank,
+        anBank: anBank,
+        simpananPokok: simpananPokok,
+        simpananWajib: simpananWajib,
+        akunPembayaran: akunPembayaran}
+        });
+
+      } 
+    );
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
