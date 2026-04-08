@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>KKS Arrahmah - Keuangan Syariah Martapura</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      background: #f8fafc;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .safe-area-top {
+      padding-top: env(safe-area-inset-top);
+    }
+    
+    .gradient-hero {
+      background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%);
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 50;
+    }
+    
+    .nav-item {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .nav-item.active {
+      color: #059669;
+    }
+    
+    .nav-item.active svg {
+      transform: scale(1.1);
+    }
+    
+    .step-card {
+      position: relative;
+    }
+    
+    .step-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #10b981, #059669);
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+    
+    .step-card:last-child::after {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .step-card::after {
+        display: none;
+      }
+    }
+    
+    .product-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .calculator-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      outline: none;
+    }
+    
+    .calculator-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #059669;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+    }
+    
+    .testimonial-card {
+      scroll-snap-align: center;
+    }
+    
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .section-hidden {
+      display: none;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- SECTION: HOME -->
+  <div id="section-home" class="fade-in">
+    <!-- Hero -->
+    <div class="gradient-hero text-white safe-area-top">
+      <div class="px-6 pt-12 pb-20">
+        <div class="flex items-center gap-2 mb-6">
+          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <span class="text-lg">🕌</span>
+          </div>
+          <span class="text-sm font-medium text-white/90">KKS Arrahmah Martapura</span>
+        </div>
+        
+        <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight mb-4">
+          Beli Sekarang,<br>Bayar Mudah dengan <span class="text-emerald-200">Taqshit</span>
+        </h1>
+        
+        <p class="text-lg text-white/80 mb-8 max-w-md">
+          Akad kredit syariah tanpa riba. Proses cepat, DP ringan, untuk masyarakat Martapura.
+        </p>
+        
+        <div class="flex flex-wrap gap-3">
+          <button onclick="showSection('products')" class="px-8 py-4 bg-white text-emerald-700 rounded-2xl font-bold shadow-lg hover:scale-105 transition-transform">
+            Lihat Produk
+          </button>
+          <button onclick="showSection('calculator')" class="px-8 py-4 bg-white/20 text-white rounded-2xl font-bold hover:bg-white/30 transition-colors">
+            Simulasi
+          </button>
+        </div>
+      </div>
+      
+      <!-- Wave -->
+      <div class="h-16 bg-[#f8fafc]" style="clip-path: ellipse(60% 100% at 50% 100%);"></div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="px-6 py-12 -mt-8">
+      <h2 class="text-2xl font-bold text-slate-800 text-center mb-10">Cara Kerja Taqshit</h2>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="step-card text-center">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-2xl mb-4 shadow-lg shadow-emerald-200 relative z-10">
+            1
+          </div>
+          <h3 class="font-bold text-slate-700 mb-1">Pilih Barang</h3>
+          <p class="text-xs text-slate-500">Motor, emas, elektronik, atau umroh</p>
+        </div>
+        
+        <div class="step-card text-center">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-2xl mb-4 shadow-lg shadow-emerald-200 relative z-10">
+            2
+          </div>
+          <h3 class="font-bold text-slate-700 mb-1">Ajukan Taqshit</h3>
+          <p class="text-xs text-slate-500">Isi formulir dengan data lengkap</p>
+        </div>
+        
+        <div class="step-card text-center">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-2xl mb-4 shadow-lg shadow-emerald-200 relative z-10">
+            3
+          </div>
+          <h3 class="font-bold text-slate-700 mb-1">Proses Cepat</h3>
+          <p class="text-xs text-slate-500">Approval dalam 1x24 jam</p>
+        </div>
+        
+        <div class="step-card text-center">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-2xl mb-4 shadow-lg shadow-emerald-200 relative z-10">
+            4
+          </div>
+          <h3 class="font-bold text-slate-700 mb-1">Ambil Barang</h3>
+          <p class="text-xs text-slate-500">Bayar angsuran sesuai kesepakatan</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="px-6 py-12 bg-white">
+      <h2 class="text-2xl font-bold text-slate-800 text-center mb-10">Keuntungan Anggota</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="glass-card rounded-3xl p-6 text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mb-4">
+            🕌
+          </div>
+          <h3 class="font-bold text-slate-800 mb-2">100% Syariah</h3>
+          <p class="text-sm text-slate-500 leading-relaxed">Akad Murabahah & Taqshit sesuai prinsip Islam tanpa riba</p>
+        </div>
+        
+        <div class="glass-card rounded-3xl p-6 text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mb-4">
+            ⚡
+          </div>
+          <h3 class="font-bold text-slate-800 mb-2">Proses Cepat</h3>
+          <p class="text-sm text-slate-500 leading-relaxed">Approval hanya 1x24 jam dengan persyaratan sederhana</p>
+        </div>
+        
+        <div class="glass-card rounded-3xl p-6 text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-3xl mb-4">
+            💎
+          </div>
+          <h3 class="font-bold text-slate-800 mb-2">Plafon Besar</h3>
+          <p class="text-sm text-slate-500 leading-relaxed">Limit hingga Rp 50 juta untuk anggota aktif</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products -->
+    <div class="px-6 py-12">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800">Produk Taqshit</h2>
+          <p class="text-sm text-slate-500 mt-1">Berbagai kebutuhan bisa ditaqshitkan</p>
+        </div>
+        <button onclick="showSection('products')" class="text-emerald-600 font-semibold text-sm hover:underline">
+          Lihat Semua →
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-4xl">
+            🏍️
+          </div>
+          <div class="p-4">
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Populer</span>
+            <h3 class="font-bold text-slate-800 mt-2">Motor</h3>
+            <p class="text-xs text-slate-500">Honda, Yamaha, Suzuki</p>
+          </div>
+        </div>
+        
+        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center text-4xl">
+            🥇
+          </div>
+          <div class="p-4">
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Investasi</span>
+            <h3 class="font-bold text-slate-800 mt-2">Emas</h3>
+            <p class="text-xs text-slate-500">Antam & UBS</p>
+          </div>
+        </div>
+        
+        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-4xl">
+            📱
+          </div>
+          <div class="p-4">
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Elektronik</span>
+            <h3 class="font-bold text-slate-800 mt-2">Gadget</h3>
+            <p class="text-xs text-slate-500">HP, Laptop, TV</p>
+          </div>
+        </div>
+        
+        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center text-4xl">
+            🕋
+          </div>
+          <div class="p-4">
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Spiritual</span>
+            <h3 class="font-bold text-slate-800 mt-2">Umroh</h3>
+            <p class="text-xs text-slate-500">Paket lengkap</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculator Preview -->
+    <div class="px-6 py-12 bg-slate-50">
+      <div class="max-w-md mx-auto glass-card rounded-3xl p-6">
+        <h3 class="font-bold text-slate-800 text-center mb-6">Simulasi Taqshit</h3>
+        
+        <div class="mb-6">
+          <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Nominal</label>
+          <div class="text-3xl font-extrabold text-emerald-600" id="preview-nominal">Rp 5.000.000</div>
+          <input type="range" min="1000000" max="50000000" step="500000" value="5000000" 
+                 class="calculator-slider mt-4" oninput="updatePreview(this.value)">
+        </div>
+        
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <button onclick="setTenor(3)" class="tenor-btn py-2 rounded-xl text-sm font-semibold bg-emerald-100 text-emerald-700" data-tenor="3">3 bln</button>
+          <button onclick="setTenor(6)" class="tenor-btn py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600" data-tenor="6">6 bln</button>
+          <button onclick="setTenor(12)" class="tenor-btn py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600" data-tenor="12">12 bln</button>
+        </div>
+        
+        <div class="p-4 bg-emerald-50 rounded-2xl text-center">
+          <p class="text-xs text-slate-500 mb-1">Angsuran per bulan</p>
+          <p class="text-2xl font-extrabold text-emerald-700" id="preview-angsuran">Rp 1.750.000</p>
+        </div>
+        
+        <button onclick="showSection('calculator')" class="w-full mt-4 py-3 text-emerald-600 font-semibold text-sm hover:bg-emerald-50 rounded-xl transition-colors">
+          Kalkulator Lengkap →
+        </button>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="px-6 py-12 bg-white">
+      <h2 class="text-2xl font-bold text-slate-800 text-center mb-8">Testimoni Anggota</h2>
+      
+      <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 snap-x">
+        <div class="testimonial-card min-w-[280px] glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold">
+              BS
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">Budi Santoso</h4>
+              <p class="text-xs text-slate-500">Pegawai Swasta</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed">"Alhamdulillah bisa beli motor tanpa riba. Prosesnya cepat, petugasnya ramah."</p>
+          <div class="flex gap-1 mt-3 text-yellow-400 text-sm">★★★★★</div>
+        </div>
+        
+        <div class="testimonial-card min-w-[280px] glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+              SA
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">Siti Aminah</h4>
+              <p class="text-xs text-slate-500">Guru TK</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed">"Taqshit emas di KKS Arrahmah sangat membantu investasi saya. Syariah dan aman."</p>
+          <div class="flex gap-1 mt-3 text-yellow-400 text-sm">★★★★★</div>
+        </div>
+        
+        <div class="testimonial-card min-w-[280px] glass-card rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+              AH
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">Ahmad Hidayat</h4>
+              <p class="text-xs text-slate-500">Wiraswasta</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed">"Sudah 3 tahun jadi anggota. Selalu puas dengan pelayanan dan transparansi."</p>
+          <div class="flex gap-1 mt-3 text-yellow-400 text-sm">★★★★★</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="px-6 py-16 gradient-hero text-white text-center">
+      <h2 class="text-3xl font-extrabold mb-4">Siap Bergabung?</h2>
+      <p class="text-white/80 mb-8 max-w-md mx-auto">Jadilah bagian dari Koperasi Syariah terpercaya di Martapura. Daftar sekarang dan nikmati fasilitas Taqshit.</p>
+      <button onclick="showSection('register')" class="px-12 py-4 bg-white text-emerald-700 rounded-2xl font-extrabold text-lg shadow-xl hover:scale-105 transition-transform">
+        Gabung Sekarang
+      </button>
+      <p class="text-xs text-white/60 mt-4">Gratis pendaftaran • Tanpa biaya admin bulanan</p>
+    </div>
+
+    <!-- Footer Spacer -->
+    <div class="h-24"></div>
+  </div>
+
+  <!-- SECTION: REGISTER (Form Pendaftaran) -->
+  <div id="section-register" class="section-hidden fade-in">
+    <div class="safe-area-top px-6 pt-6 pb-24">
+      <div class="flex items-center gap-3 mb-6">
+        <button onclick="showSection('home')" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+          <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold text-slate-800">Pendaftaran Anggota</h1>
+      </div>
+      
+      <div class="glass-card rounded-3xl p-6 mb-6">
+        <p class="text-sm text-slate-600 mb-4">Silakan isi formulir pendaftaran untuk menjadi anggota KKS Arrahmah dan menikmati fasilitas Taqshit.</p>
+        <button onclick="openRegistrationForm()" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-600 transition-colors">
+          Buka Formulir Pendaftaran
+        </button>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-5">
+        <h3 class="font-bold text-slate-800 mb-3">Keuntungan Jadi Anggota</h3>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li class="flex items-center gap-2">✓ Akses fasilitas Taqshit</li>
+          <li class="flex items-center gap-2">✓ Simpanan dengan bagi hasil</li>
+          <li class="flex items-center gap-2">✓ Pinjaman darurat tanpa jaminan</li>
+          <li class="flex items-center gap-2">✓ Prioritas layanan</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: PRODUCTS -->
+  <div id="section-products" class="section-hidden fade-in">
+    <div class="safe-area-top px-6 pt-6 pb-24">
+      <div class="flex items-center gap-3 mb-6">
+        <button onclick="showSection('home')" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+          <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold text-slate-800">Produk Taqshit</h1>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="glass-card rounded-2xl p-4 flex gap-4">
+          <div class="w-20 h-20 rounded-xl bg-slate-200 flex items-center justify-center text-3xl flex-shrink-0">🏍️</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-slate-800">Motor Baru</h3>
+            <p class="text-xs text-slate-500 mt-1">Honda, Yamaha, Kawasaki, Suzuki</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">DP 10%</span>
+              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">12-36 bln</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-4 flex gap-4">
+          <div class="w-20 h-20 rounded-xl bg-yellow-100 flex items-center justify-center text-3xl flex-shrink-0">🥇</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-slate-800">Logam Mulia</h3>
+            <p class="text-xs text-slate-500 mt-1">Emas Antam & UBS 1-100 gram</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">DP 0%</span>
+              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">3-12 bln</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-4 flex gap-4">
+          <div class="w-20 h-20 rounded-xl bg-blue-100 flex items-center justify-center text-3xl flex-shrink-0">📱</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-slate-800">Elektronik</h3>
+            <p class="text-xs text-slate-500 mt-1">HP, Laptop, TV, Kulkas, AC</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">DP 15%</span>
+              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">6-18 bln</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-4 flex gap-4">
+          <div class="w-20 h-20 rounded-xl bg-teal-100 flex items-center justify-center text-3xl flex-shrink-0">🕋</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-slate-800">Paket Umroh</h3>
+            <p class="text-xs text-slate-500 mt-1">Paket lengkap 9-12 hari</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">DP 20%</span>
+              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">6-24 bln</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-4 flex gap-4">
+          <div class="w-20 h-20 rounded-xl bg-purple-100 flex items-center justify-center text-3xl flex-shrink-0">🎓</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-slate-800">Biaya Pendidikan</h3>
+            <p class="text-xs text-slate-500 mt-1">SPP, UKT, SPPG, kursus</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">DP 0%</span>
+              <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">3-12 bln</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: CALCULATOR -->
+  <div id="section-calculator" class="section-hidden fade-in">
+    <div class="safe-area-top px-6 pt-6 pb-24">
+      <div class="flex items-center gap-3 mb-6">
+        <button onclick="showSection('home')" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+          <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold text-slate-800">Kalkulator Taqshit</h1>
+      </div>
+      
+      <div class="glass-card rounded-3xl p-6">
+        <div class="mb-8">
+          <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">Nominal Pembiayaan</label>
+          <div class="text-4xl font-extrabold text-emerald-600 mb-4" id="calc-nominal">Rp 10.000.000</div>
+          <input type="range" min="1000000" max="50000000" step="500000" value="10000000" 
+                 class="calculator-slider" id="calc-nominal-slider" oninput="updateCalculator()">
+          <div class="flex justify-between text-xs text-slate-400 mt-2">
+            <span>Rp 1 jt</span>
+            <span>Rp 50 jt</span>
+          </div>
+        </div>
+        
+        <div class="mb-8">
+          <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">Jangka Waktu</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setCalcTenor(3)" class="calc-tenor-btn py-3 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-600" data-tenor="3">3</button>
+            <button onclick="setCalcTenor(6)" class="calc-tenor-btn py-3 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-600" data-tenor="6">6</button>
+            <button onclick="setCalcTenor(12)" class="calc-tenor-btn py-3 rounded-xl text-sm font-bold border-2 border-emerald-500 text-emerald-600 bg-emerald-50" data-tenor="12">12</button>
+            <button onclick="setCalcTenor(24)" class="calc-tenor-btn py-3 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-600" data-tenor="24">24</button>
+          </div>
+          <p class="text-center text-xs text-slate-400 mt-2">bulan</p>
+        </div>
+        
+        <div class="p-6 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl text-white text-center">
+          <p class="text-sm text-emerald-100 mb-2">Angsuran per Bulan</p>
+          <div class="text-4xl font-extrabold" id="calc-angsuran">Rp 916.667</div>
+          <p class="text-xs text-emerald-200 mt-2">*Termasuk margin 5% flat per tahun</p>
+        </div>
+        
+        <div class="mt-6 p-4 bg-slate-50 rounded-xl">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-slate-500">Nominal</span>
+            <span class="font-semibold text-slate-700" id="detail-nominal">Rp 10.000.000</span>
+          </div>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-slate-500">Margin (5% flat)</span>
+            <span class="font-semibold text-slate-700" id="detail-margin">Rp 500.000</span>
+          </div>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-slate-500">Total</span>
+            <span class="font-semibold text-slate-700" id="detail-total">Rp 10.500.000</span>
+          </div>
+          <div class="flex justify-between text-sm pt-2 border-t border-slate-200">
+            <span class="text-slate-500">Tenor</span>
+            <span class="font-semibold text-slate-700" id="detail-tenor">12 bulan</span>
+          </div>
+        </div>
+        
+        <button onclick="showSection('register')" class="w-full mt-6 py-4 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-600 transition-colors">
+          Ajukan Taqshit Ini
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION (iOS Style) -->
+  <nav class="bottom-nav">
+    <div class="flex justify-around items-center py-3 px-6">
+      <button onclick="showSection('home')" class="nav-item active flex flex-col items-center gap-1 w-16" data-nav="home">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span class="text-[10px] font-medium">Beranda</span>
+      </button>
+      
+      <button onclick="showSection('register')" class="nav-item flex flex-col items-center gap-1 w-16" data-nav="register">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span class="text-[10px] font-medium">Gabung</span>
+      </button>
+      
+      <button onclick="showSection('products')" class="nav-item flex flex-col items-center gap-1 w-16" data-nav="products">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span class="text-[10px] font-medium">Produk</span>
+      </button>
+      
+      <button onclick="showSection('calculator')" class="nav-item flex flex-col items-center gap-1 w-16" data-nav="calculator">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span class="text-[10px] font-medium">Simulasi</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    // Section Navigation
+    function showSection(section) {
+      // Hide all sections
+      document.querySelectorAll('[id^="section-"]').forEach(el => {
+        el.classList.add('section-hidden');
+      });
+      
+      // Show target section
+      const target = document.getElementById('section-' + section);
+      if (target) {
+        target.classList.remove('section-hidden');
+        target.classList.add('fade-in');
+      }
+      
+      // Update nav active state
+      document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+        if (nav.dataset.nav === section) {
+          nav.classList.add('active');
+        }
+      });
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Calculator Logic
+    let currentTenor = 12;
+    let currentCalcTenor = 12;
+    const marginRate = 0.05; // 5% flat per tahun
+    
+    function formatRupiah(angka) {
+      return 'Rp ' + angka.toLocaleString('id-ID');
+    }
+    
+    function updatePreview(value) {
+      document.getElementById('preview-nominal').textContent = formatRupiah(parseInt(value));
+      
+      const nominal = parseInt(value);
+      const margin = nominal * marginRate * (currentTenor / 12);
+      const total = nominal + margin;
+      const angsuran = total / currentTenor;
+      
+      document.getElementById('preview-angsuran').textContent = formatRupuan(Math.round(angsuran));
+    }
+    
+    function setTenor(tenor) {
+      currentTenor = tenor;
+      document.querySelectorAll('.tenor-btn').forEach(btn => {
+        if (parseInt(btn.dataset.tenor) === tenor) {
+          btn.classList.remove('bg-slate-100', 'text-slate-600');
+          btn.classList.add('bg-emerald-100', 'text-emerald-700');
+        } else {
+          btn.classList.remove('bg-emerald-100', 'text-emerald-700');
+          btn.classList.add('bg-slate-100', 'text-slate-600');
+        }
+      });
+      
+      // Update calculation
+      const slider = document.querySelector('#section-home .calculator-slider');
+      updatePreview(slider.value);
+    }
+    
+    function updateCalculator() {
+      const nominal = parseInt(document.getElementById('calc-nominal-slider').value);
+      document.getElementById('calc-nominal').textContent = formatRupiah(nominal);
+      
+      const margin = nominal * marginRate * (currentCalcTenor / 12);
+      const total = nominal + margin;
+      const angsuran = total / currentCalcTenor;
+      
+      document.getElementById('calc-angsuran').textContent = formatRupiah(Math.round(angsuran));
+      document.getElementById('detail-nominal').textContent = formatRupiah(nominal);
+      document.getElementById('detail-margin').textContent = formatRupiah(Math.round(margin));
+      document.getElementById('detail-total').textContent = formatRupiah(Math.round(total));
+      document.getElementById('detail-tenor').textContent = currentCalcTenor + ' bulan';
+    }
+    
+    function setCalcTenor(tenor) {
+      currentCalcTenor = tenor;
+      document.querySelectorAll('.calc-tenor-btn').forEach(btn => {
+        if (parseInt(btn.dataset.tenor) === tenor) {
+          btn.classList.remove('border-slate-200', 'text-slate-600');
+          btn.classList.add('border-emerald-500', 'text-emerald-600', 'bg-emerald-50');
+        } else {
+          btn.classList.remove('border-emerald-500', 'text-emerald-600', 'bg-emerald-50');
+          btn.classList.add('border-slate-200', 'text-slate-600');
+        }
+      });
+      updateCalculator();
+    }
+    
+    function formatRupuan(angka) {
+      return 'Rp ' + angka.toLocaleString('id-ID');
+    }
+    
+    function openRegistrationForm() {
+      const formUrl = 'daftarAnggotaModern.html';
+      window.open(formUrl, '_blank');
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updatePreview(5000000);
+      updateCalculator();
+    });
+  </script>
+
+</body>
+</html>

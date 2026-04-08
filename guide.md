@@ -20,5 +20,7 @@ clasp push -f && clasp deploy -i AKfycbw3r4CtG37depYd6HPX1kSceBg97ixyDFhRA55NBUp
 
 ===
 
+clasp push -f && clasp deploy -i AKfycbw3r4CtG37depYd6HPX1kSceBg97ixyDFhRA55NBUpXaGgXvjoyxXP91cVwtKwQ1d2q -d "Add landing page with Taqshit marketing"
+
 
 

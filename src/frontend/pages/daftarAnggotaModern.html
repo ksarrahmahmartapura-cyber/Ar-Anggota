@@ -74,7 +74,7 @@
   </style>
 </head>
 
-<body class="min-h-screen flex items-start justify-center sm:py-10 bg-slate-50">
+<body class="min-h-screen flex items-center justify-center py-6 sm:py-10 bg-slate-50">
 
   <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6 px-0 sm:px-4">
 
@@ -82,13 +82,13 @@
     <div class="lg:col-span-2 space-y-6">
       <div class="glass-card sm:rounded-[2.5rem] p-6 sm:p-10 transition-all">
         <!-- Header -->
-        <div class="mb-8 text-center sm:text-left">
+        <div class="mb-8 text-center">
           <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Bergabung Bersama Kami</h1>
           <p class="text-slate-400 text-sm mt-1">KKS Arrahmah - Cabang Martapura</p>
         </div>
 
         <!-- Progress Tracker -->
-        <div class="relative flex justify-between mb-10 max-w-md mx-auto sm:mx-0">
+        <div class="relative flex justify-between mb-10 max-w-md mx-auto">
           <div class="absolute top-1/2 left-0 w-full h-[2px] bg-slate-100 -translate-y-1/2 z-0"></div>
           <div id="progress-bar"
             class="absolute top-1/2 left-0 w-0 h-[2px] bg-green-500 -translate-y-1/2 z-0 transition-all duration-500">
@@ -371,242 +371,7 @@
     <p class="text-sm text-slate-400 mt-2">Mohon tunggu sebentar, kami sedang mengamankan data Anda.</p>
   </div>
 
-  <script>
-    let currentStep = 1;
-    const totalSteps = 4;
-    const form = document.getElementById('wizardForm');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-
-    // --- SMART FEATURES: AUTO-FORMATTING ---
-    function formatName(el) {
-      el.value = el.value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-      updateLiveSummary();
-    }
-
-    function formatPhone(el) {
-      if (el.value.startsWith('8')) el.value = '08' + el.value.slice(1);
-      updateLiveSummary();
-    }
-
-    function validateNIK(el) {
-      const error = document.getElementById('nik-error');
-      if (el.value.length !== 16) {
-        el.classList.add('border-yellow-300');
-        error.classList.remove('hidden');
-      } else {
-        el.classList.remove('border-yellow-300');
-        error.classList.add('hidden');
-      }
-      updateLiveSummary();
-    }
-
-    function detectAge(el) {
-      if (!el.value) return;
-      const dob = new Date(el.value);
-      const diff = Date.now() - dob.getTime();
-      const age = new Date(diff).getUTCFullYear() - 1970;
-
-      const badge = document.getElementById('age-badge');
-      let gen = "";
-      const year = dob.getFullYear();
-      if (year >= 1997 && year <= 2012) gen = "Gen Z";
-      else if (year >= 1981 && year <= 1996) gen = "Millennial";
-      else if (year >= 1965 && year <= 1980) gen = "Gen X";
-
-      badge.textContent = `${age} Thn | ${gen}`;
-      badge.classList.remove('hidden');
-      updateLiveSummary();
-    }
-
-    // --- SMART FEATURES: AUTO-FILL ADDRESS ---
-    async function autoFillAddress(el, type) {
-      if (el.value.length === 5) {
-        const loading = document.getElementById(`pos-loading-${type}`);
-        loading.classList.remove('hidden');
-        try {
-          // Mock API logic for demo purposes (usually fetch from a real Indonesian region API)
-          // For Martapura sample: 70611, 70612, etc.
-          setTimeout(() => {
-            if (el.value === "70611") {
-              document.getElementById(`kelDesa${type}`).value = "Jawa";
-              document.getElementById(`kec${type}`).value = "Martapura";
-            } else if (el.value === "70619") {
-              document.getElementById(`kelDesa${type}`).value = "Indrasari";
-              document.getElementById(`kec${type}`).value = "Martapura";
-            }
-            loading.classList.add('hidden');
-            updateLiveSummary();
-          }, 800);
-        } catch (e) { loading.classList.add('hidden'); }
-      }
-    }
-
-    function copyAddress(cb) {
-      if (cb.checked) {
-        ['alamat', 'rt', 'rw', 'kelDesa', 'kec'].forEach(f => {
-          document.getElementById(`${f}Tinggal`).value = document.getElementById(`${f}KTP`).value;
-        });
-      }
-      updateLiveSummary();
-    }
-
-    // --- UI LOGIC: NAVIGATION ---
-    function showStep(step) {
-      document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`step-${step}`).classList.remove('hidden');
-
-      document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
-      document.getElementById('nextBtn').classList.toggle('hidden', step === totalSteps);
-      document.getElementById('submitBtn').classList.toggle('hidden', step !== totalSteps);
-
-      updateStepUI(step);
-      saveToDraft();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function updateStepUI(step) {
-      document.querySelectorAll('.step-dot').forEach((dot, idx) => {
-        const s = idx + 1;
-        dot.classList.toggle('active', s === step);
-        dot.classList.toggle('completed', s < step);
-        dot.classList.toggle('bg-slate-100', s > step);
-      });
-      const bar = document.getElementById('progress-bar');
-      bar.style.width = `${((step - 1) / (totalSteps - 1)) * 100}%`;
-    }
-
-    function goToStep(step) {
-      // Only allow going to previous steps or next step if valid
-      if (step < currentStep) {
-        currentStep = step;
-        showStep(currentStep);
-      }
-    }
-
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      const inputs = document.getElementById(`step-${currentStep}`).querySelectorAll('[required], input[type="text"], input[type="number"]');
-      let isValid = true;
-      // Basic validation for name and nik on step 1
-      if (currentStep === 1) {
-        if (document.getElementById('namaLengkap').value.length < 3) isValid = false;
-        if (document.getElementById('nik').value.length !== 16) isValid = false;
-      }
-
-      if (isValid && currentStep < totalSteps) {
-        currentStep++;
-        showStep(currentStep);
-      } else {
-        alert("Mohon lengkapi data dengan benar.");
-      }
-    });
-
-    document.getElementById('prevBtn').addEventListener('click', () => {
-      if (currentStep > 1) {
-        currentStep--;
-        showStep(currentStep);
-      }
-    });
-
-    // --- LIVE SUMMARY & CHECKOUT ---
-    function updateCheckout() {
-      const pokok = document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value;
-      const wajib = document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value;
-
-      const total = parseInt(pokok) + parseInt(wajib);
-
-      document.getElementById('check-pokok').textContent = `Rp ${parseInt(pokok).toLocaleString()}`;
-      document.getElementById('check-wajib').textContent = `Rp ${parseInt(wajib).toLocaleString()}`;
-      document.getElementById('check-total').textContent = `Rp ${total.toLocaleString()}`;
-
-      updateLiveSummary();
-    }
-
-    function updateLiveSummary() {
-      const nama = document.getElementById('namaLengkap').value;
-      const summaryEmpty = document.getElementById('summary-empty');
-      const summaryContent = document.getElementById('summary-content');
-
-      if (nama.length > 2) {
-        summaryEmpty.classList.add('hidden');
-        summaryContent.classList.remove('hidden');
-
-        document.getElementById('sum-nama').textContent = nama;
-        document.getElementById('sum-nik').textContent = `NIK: ${document.getElementById('nik').value || '---'}`;
-        document.getElementById('sum-age').textContent = document.getElementById('age-badge').textContent;
-
-        const alamat = document.getElementById('alamatTinggal').value;
-        if (alamat) {
-          document.getElementById('sum-alamat-box').classList.remove('hidden');
-          document.getElementById('sum-alamat').textContent = `${alamat}, RT.${document.getElementById('rtTinggal').value}/${document.getElementById('rwTinggal').value}, ${document.getElementById('kelDesaTinggal').value}`;
-        }
-      }
-    }
-
-    // --- DATA PERSISTENCE: DRAFT ---
-    function saveToDraft() {
-      const data = {};
-      document.querySelectorAll('input, select').forEach(el => {
-        if (el.id) data[el.id] = el.value;
-      });
-      localStorage.setItem('kks_form_draft', JSON.stringify(data));
-    }
-
-    function loadDraft() {
-      const draft = localStorage.getItem('kks_form_draft');
-      if (draft) {
-        const data = JSON.parse(draft);
-        for (const key in data) {
-          const el = document.getElementById(key);
-          if (el) el.value = data[key];
-        }
-        updateCheckout();
-        detectAge(document.getElementById('tanggalLahir'));
-      }
-    }
-
-    // --- FINAL SUBMISSION ---
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      loadingOverlay.classList.remove('hidden');
-
-      const formData = {
-        tanggalBergabung: new Date().toISOString().split('T')[0],
-        namaAnggota: document.getElementById('namaLengkap').value,
-        nik: document.getElementById('nik').value,
-        tempatLahir: document.getElementById('tempatLahir').value,
-        tanggalLahir: document.getElementById('tanggalLahir').value,
-        jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked')?.value || "Lelaki",
-        telponAnggota: "'" + document.getElementById('telpon').value,
-        email: document.getElementById('email').value,
-        alamatKTP: `${document.getElementById('alamatKTP').value} RT.${document.getElementById('rtKTP').value} RW.${document.getElementById('rwKTP').value} Kel.${document.getElementById('kelDesaKTP').value} Kec.${document.getElementById('kecKTP').value}`,
-        alamatTinggal: `${document.getElementById('alamatTinggal').value} RT.${document.getElementById('rtTinggal').value} RW.${document.getElementById('rwTinggal').value} Kel.${document.getElementById('kelDesaTinggal').value} Kec.${document.getElementById('kecTinggal').value}`,
-        jenisPekerjaan: document.getElementById('jenisPekerjaan').value,
-        kantorPekerjaan: document.getElementById('kantorPekerjaan').value,
-        alamatKantor: document.getElementById('alamatKantor').value,
-        simpananPokok: document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value,
-        simpananWajib: document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value,
-        akunPembayaran: document.querySelector('input[name="akunPembayaran"]:checked').value
-      };
-
-      google.script.run.withSuccessHandler((res) => {
-        localStorage.removeItem('kks_form_draft');
-        loadingOverlay.innerHTML = `
-          <div class="text-green-500 text-6xl mb-6">✓</div>
-          <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Pendaftaran Terkirim!</h2>
-          <p class="text-slate-400 mb-8 max-w-xs mx-auto">${res.message}</p>
-          <button onclick="google.script.host.close()" class="px-12 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-black transition-all">Selesai</button>
-        `;
-      }).newTransaction({
-        method: 'addPending',
-        sheet: 'simpanan',
-        data: formData
-      });
-    });
-
-    // INIT
-    loadDraft();
-    updateCheckout();
-  </script>
+  <?!= include('JS_Helpers'); ?>
 </body>
 
 </html>

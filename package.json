@@ -1,0 +1,12 @@
+{
+  "name": "kks-arrahmah-martapura",
+  "version": "1.0.0",
+  "description": "Koperasi Konsumen Syariah Arrahmah - Martapura",
+  "scripts": {
+    "build": "node build/build.js",
+    "push": "npm run build && clasp push",
+    "deploy": "npm run build && clasp push && clasp deploy"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

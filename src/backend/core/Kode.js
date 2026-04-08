@@ -1,3 +1,7 @@
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Arrahmah')
@@ -41,21 +45,7 @@ function fnApprovalDashboard() {
 }
 
 function getPendingMembersData() {
-  const processor = new InputTransactions({ method: 'getPending', data: {} });
-  const sheet = processor.ssPending;
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return [];
-  return data.slice(1).map((row, index) => {
-    return {
-      rowIndex: index,
-      tanggal: row[1],
-      nama: row[2],
-      nik: row[3],
-      wa: row[7],
-      pokok: row[17],
-      wajib: row[18]
-    };
-  });
+  return MemberService.getPendingData();
 }
 
 function processPendingMember(action, rowIndex) {
