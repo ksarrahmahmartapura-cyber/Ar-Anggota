@@ -73,207 +73,126 @@
             <div class="col border border-5 mr-1 rounded">
               <h6 class="text-center font-weight-bold">DATA ANGGOTA</h6>
               <div class="d-flex flex-column">
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-6">
-                    <label for="tanggalBergabung" class="h6">Tanggal Bergabung*</label>
-                  </div>
-                  <div class="col">
-                    <input type="date" class="form-control form-control-sm text-center" id="tanggalBergabung" required>
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="tanggalBergabung" class="h6 mb-1">Tanggal Bergabung*</label>
+                  <input type="date" class="form-control form-control-sm text-center" id="tanggalBergabung" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1" style="font-size: 12px;">
-                  <div class="col-5">
-                    <label for="namaLengkap" class="h6">Nama Lengkap*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="namaLengkap" placeholder="Nama Lengkap" required>
-                  </div>
+                <div class="mt-2 text-center" style="font-size: 12px;">
+                  <label for="namaLengkap" class="h6 mb-1">Nama Lengkap*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="namaLengkap" placeholder="Nama Lengkap" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="nik" class="h6">NIK*</label>
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control form-control-sm text-center" id="nik" placeholder="1234560101010000" 
-                    oninput="limitDigits(this,16)" min="1" required>
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="nik" class="h6 mb-1">NIK*</label>
+                  <input type="number" class="form-control form-control-sm text-center" id="nik" placeholder="1234560101010000" 
+                  oninput="limitDigits(this,16)" min="1" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1" style="font-size: 12px;">
-                  <div class="col-5">
-                    <label for="tempatLahir" class="h6">Tempat Lahir*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="tempatLahir" placeholder="Tempat Lahir" required>
-                  </div>
+                <div class="mt-2 text-center" style="font-size: 12px;">
+                  <label for="tempatLahir" class="h6 mb-1">Tempat Lahir*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="tempatLahir" placeholder="Tempat Lahir" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-6">
-                    <label for="tanggalLahir" class="h6">Tanggal Lahir*</label>
-                  </div>
-                  <div class="col">
-                    <input type="date" class="form-control form-control-sm text-center" id="tanggalLahir" required>
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="tanggalLahir" class="h6 mb-1">Tanggal Lahir*</label>
+                  <input type="date" class="form-control form-control-sm text-center" id="tanggalLahir" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="jenisKelamin" class="h6">Jenis Kelamin*</label>
-                  </div>
-                  <div class="col">
-                    <div class="row justify-content-around">
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="jenisKelamin" id="laki" value="Laki-Laki" checked>
-                        <label class="form-check-label" for="laki">
-                          Laki-Laki
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="jenisKelamin" id="perempuan" value="Perempuan">
-                        <label class="form-check-label" for="perempuan">
-                          Perempuan
-                        </label>
-                      </div>
-                    </div>                                  
-                  </div>
-                </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="telpon" class="h6">Nomor Telpon*</label>
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control form-control-sm text-center" id="telpon" placeholder="081234567890" 
-                    oninput="limitDigits(this,13)" min="1" required>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="email" class="h6">Email*</label>
-                  </div>
-                  <div class="col">
-                    <input type="email" class="form-control form-control-sm text-center" id="email" placeholder="nama@email.com" required>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col">
-                    <label for="alamatKTP" class="h6">Alamat KTP*</label>              
-                    <div class="d-flex justify-content-start">
-                      <div class="form-row">
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="alamatKTP" placeholder="Jl. Alamat KTP Blok-A No.123" required>
-                        </div>
-                        <div class="col-2">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rtKTP" placeholder="RT" 
-                          oninput="limitDigits(this,3)" min="0" required>
-                        </div>
-                        <div class="col-2">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rwKTP" placeholder="RW" 
-                          oninput="limitDigits(this,3)" min="0" required>
-                        </div>               
-                      </div>                
+                <div class="mt-2 text-center">
+                  <label class="h6 mb-1">Jenis Kelamin*</label>
+                  <div class="d-flex flex-column align-items-center gap-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="jenisKelamin" id="laki" value="Laki-Laki" checked>
+                      <label class="form-check-label" for="laki">Laki-Laki</label>
                     </div>
-                    <div class="d-flex justify-content-start">
-                      <div class="form-row">
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="kelDesaKTP" placeholder="Kelurahan / Desa" required>
-                        </div>
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="kecKTP" placeholder="Kecamatan" required>
-                        </div>
-                        <div class="col-3">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="kodePosKTP" placeholder="70123" oninput="limitDigits(this,5)" min="0" required>
-                        </div>               
-                      </div>                
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="jenisKelamin" id="perempuan" value="Perempuan">
+                      <label class="form-check-label" for="perempuan">Perempuan</label>
                     </div>
                   </div>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col">
-                    <label for="alamatTinggal" class="h6">Alamat Tinggal*</label>              
-                    <div class="d-flex justify-content-start">
-                      <div class="form-row">
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="alamatTinggal" placeholder="Jl. Alamat Tinggal Blok-A No.123" required>
-                        </div>
-                        <div class="col-2">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rtTinggal" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
-                        </div>
-                        <div class="col-2">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rwTinggal" placeholder="RW" 
-                          oninput="limitDigits(this,3)" min="0" required>
-                        </div>               
-                      </div>                
+                <div class="mt-2 text-center">
+                  <label for="telpon" class="h6 mb-1">Nomor Telpon*</label>
+                  <input type="number" class="form-control form-control-sm text-center" id="telpon" placeholder="081234567890" 
+                  oninput="limitDigits(this,13)" min="1" required>
+                </div>
+                <div class="mt-2 text-center">
+                  <label for="email" class="h6 mb-1">Email*</label>
+                  <input type="email" class="form-control form-control-sm text-center" id="email" placeholder="nama@email.com" required>
+                </div>
+                <div class="mt-3 text-center">
+                  <label for="alamatKTP" class="h6 mb-2">ALAMAT KTP*</label>
+                  <input type="text" class="form-control form-control-sm mb-2 text-center" id="alamatKTP" placeholder="Jl. Alamat KTP Blok-A No.123" required>
+                  <div class="form-row">
+                    <div class="col-6">
+                      <input type="number" class="form-control form-control-sm text-center mb-2" id="rtKTP" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
                     </div>
-                    <div class="d-flex justify-content-start">
-                      <div class="form-row">
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="kelDesaTinggal" placeholder="Kelurahan / Desa" required>
-                        </div>
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="kecTinggal" placeholder="Kecamatan" required>
-                        </div>
-                        <div class="col-3">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="kodePosTinggal" placeholder="70123" oninput="limitDigits(this,5)" min="0" required>
-                        </div>               
-                      </div>
+                    <div class="col-6">
+                      <input type="number" class="form-control form-control-sm text-center mb-2" id="rwKTP" placeholder="RW" oninput="limitDigits(this,3)" min="0" required>
                     </div>
                   </div>
-                </div>                         
+                  <div class="form-row">
+                    <div class="col-6">
+                      <input type="text" class="form-control form-control-sm mb-2 text-center" id="kelDesaKTP" placeholder="Kelurahan / Desa" required>
+                    </div>
+                    <div class="col-6">
+                      <input type="text" class="form-control form-control-sm mb-2 text-center" id="kecKTP" placeholder="Kecamatan" required>
+                    </div>
+                  </div>
+                  <input type="number" class="form-control form-control-sm text-center mb-2" id="kodePosKTP" placeholder="Kode Pos (70123)" oninput="limitDigits(this,5)" min="0" required>
+                </div>
+                <div class="mt-3 text-center">
+                  <label for="alamatTinggal" class="h6 mb-2">ALAMAT TINGGAL*</label>
+                  <input type="text" class="form-control form-control-sm mb-2 text-center" id="alamatTinggal" placeholder="Jl. Alamat Tinggal Blok-A No.123" required>
+                  <div class="form-row">
+                    <div class="col-6">
+                      <input type="number" class="form-control form-control-sm text-center mb-2" id="rtTinggal" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
+                    </div>
+                    <div class="col-6">
+                      <input type="number" class="form-control form-control-sm text-center mb-2" id="rwTinggal" placeholder="RW" oninput="limitDigits(this,3)" min="0" required>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="col-6">
+                      <input type="text" class="form-control form-control-sm mb-2 text-center" id="kelDesaTinggal" placeholder="Kelurahan / Desa" required>
+                    </div>
+                    <div class="col-6">
+                      <input type="text" class="form-control form-control-sm mb-2 text-center" id="kecTinggal" placeholder="Kecamatan" required>
+                    </div>
+                  </div>
+                  <input type="number" class="form-control form-control-sm text-center mb-2" id="kodePosTinggal" placeholder="Kode Pos (70123)" oninput="limitDigits(this,5)" min="0" required>
+                </div>
+                         
               </div>
             </div>
             <div class="col border border-5 mr-1 rounded">
               <h6 class="text-center font-weight-bold">KELUARGA SERUMAH</h6>
               <div class="d-flex flex-column">
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="keluargaSerumah" class="h6">Nama Lengkap</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="keluargaSerumah" placeholder="Nama Lengkap">
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="keluargaSerumah" class="h6 mb-1">Nama Lengkap</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="keluargaSerumah" placeholder="Nama Lengkap">
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="hubunganKeluargaSerumah" class="h6">Hubungan</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="hubunganKeluargaSerumah" placeholder="Suami/Istri/Orang Tua">
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="hubunganKeluargaSerumah" class="h6 mb-1">Hubungan</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="hubunganKeluargaSerumah" placeholder="Suami/Istri/Orang Tua">
                 </div>
-                <div class="d-flex justify-content-center mt-1 mb-1">
-                  <div class="col-5">
-                    <label for="telponKeluargaSerumah" class="h6">Nomor Telpon</label>
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control form-control-sm text-center" id="telponKeluargaSerumah" placeholder="081234567890" oninput="limitDigits(this,13)" min="0">
-                  </div>
+                <div class="mt-2 text-center mb-1">
+                  <label for="telponKeluargaSerumah" class="h6 mb-1">Nomor Telpon</label>
+                  <input type="number" class="form-control form-control-sm text-center" id="telponKeluargaSerumah" placeholder="081234567890" oninput="limitDigits(this,13)" min="0">
                 </div>
               </div>
               <h6 class="text-center font-weight-bold">KELUARGA TIDAK SERUMAH</h6>
               <div class="d-flex flex-column">
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="keluargaTidakSerumah" class="h6">Nama Lengkap</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="keluargaTidakSerumah" placeholder="Nama Lengkap">
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="keluargaTidakSerumah" class="h6 mb-1">Nama Lengkap</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="keluargaTidakSerumah" placeholder="Nama Lengkap">
                 </div>
-                <div class="d-flex justify-content-center mt-1 mb-1">
-                  <div class="col-5">
-                    <label for="telponKeluarga" class="h6">Nomor Telpon</label>
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control form-control-sm text-center" id="telponKeluargaTidakSerumah" placeholder="081234567890" oninput="limitDigits(this,13)" min="0">
-                  </div>
+                <div class="mt-2 text-center mb-1">
+                  <label for="telponKeluarga" class="h6 mb-1">Nomor Telpon</label>
+                  <input type="number" class="form-control form-control-sm text-center" id="telponKeluargaTidakSerumah" placeholder="081234567890" oninput="limitDigits(this,13)" min="0">
                 </div>
               </div>
               <h6 class="text-center font-weight-bold">DETAIL PEKERJAAN</h6>
               <div class="d-flex flex-column">
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="jenisPekerjaan" class="h6">Pekerjaan*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="jenisPekerjaan" list="listJenisPekerjaan" placeholder="Wirausaha" required>
+                <div class="mt-2 text-center">
+                  <label for="jenisPekerjaan" class="h6 mb-1">Pekerjaan*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="jenisPekerjaan" list="listJenisPekerjaan" placeholder="Wirausaha" required>
                     <datalist id="listJenisPekerjaan">
                       <option value="Aparatur Sipil Negara (ASN)">Aparatur Sipil Negara (ASN)</option>
                       <option value="Pegawai BUMN / BUMD">Pegawai BUMN / BUMD</option>
@@ -289,121 +208,80 @@
                     </datalist>
                   </div>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="kantorPekerjaan" class="h6">Nama Kantor*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="kantorPekerjaan" placeholder="PT. Nama Perusahaan" required>
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="kantorPekerjaan" class="h6 mb-1">Nama Kantor*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="kantorPekerjaan" placeholder="PT. Nama Perusahaan" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col">
-                    <label for="alamatKantor" class="h6">Alamat Kantor*</label>              
-                    <div class="d-flex justify-content-start">
-                      <div class="form-row">
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="alamatKantor" placeholder="Jl. Alamat Kantor Blok-A No.123" required>
-                        </div>
-                        <div class="col-2">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rtKantor" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
-                        </div>
-                        <div class="col-2">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="rwKantor" placeholder="RW" oninput="limitDigits(this,3)" min="0" required>
-                        </div>               
-                      </div>                
+                <div class="mt-3 text-center">
+                  <label for="alamatKantor" class="h6 mb-2">ALAMAT KANTOR*</label>
+                  <input type="text" class="form-control form-control-sm mb-2 text-center" id="alamatKantor" placeholder="Jl. Alamat Kantor Blok-A No.123" required>
+                  <div class="form-row">
+                    <div class="col-6">
+                      <input type="number" class="form-control form-control-sm text-center mb-2" id="rtKantor" placeholder="RT" oninput="limitDigits(this,3)" min="0" required>
                     </div>
-                    <div class="d-flex justify-content-start">
-                      <div class="form-row">
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="kelDesaKantor" placeholder="Kelurahan / Desa" required>
-                        </div>
-                        <div class="col">
-                          <input type="text" class="form-control form-control-sm mb-1" id="kecKantor" placeholder="Kecamatan" required>
-                        </div>
-                        <div class="col-3">
-                          <input type="number" class="form-control form-control-sm text-center mb-1" id="kodePosKantor" placeholder="70123" oninput="limitDigits(this,5)" min="0" required>
-                        </div>               
-                      </div>                
+                    <div class="col-6">
+                      <input type="number" class="form-control form-control-sm text-center mb-2" id="rwKantor" placeholder="RW" oninput="limitDigits(this,3)" min="0" required>
                     </div>
                   </div>
+                  <div class="form-row">
+                    <div class="col-6">
+                      <input type="text" class="form-control form-control-sm mb-2 text-center" id="kelDesaKantor" placeholder="Kelurahan / Desa" required>
+                    </div>
+                    <div class="col-6">
+                      <input type="text" class="form-control form-control-sm mb-2 text-center" id="kecKantor" placeholder="Kecamatan" required>
+                    </div>
+                  </div>
+                  <input type="number" class="form-control form-control-sm text-center mb-2" id="kodePosKantor" placeholder="Kode Pos (70123)" oninput="limitDigits(this,5)" min="0" required>
                 </div>
               </div>
             </div>
             <div class="col border border-5 rounded">
               <h6 class="text-center font-weight-bold">DATA BANK</h6>
               <div class="d-flex flex-column">
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="namaBank" class="h6">Nama Bank*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="namaBank" placeholder="BSI/MANDIRI/BCA/BNI" required>
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="namaBank" class="h6 mb-1">Nama Bank*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="namaBank" placeholder="BSI/MANDIRI/BCA/BNI" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="noRekBank" class="h6">No Rekening*</label>
-                  </div>
-                  <div class="col">
-                    <input type="number" class="form-control form-control-sm text-center" id="noRekBank" placeholder="123456789" min="0" required>
-                  </div>
+                <div class="mt-2 text-center">
+                  <label for="noRekBank" class="h6 mb-1">No Rekening*</label>
+                  <input type="number" class="form-control form-control-sm text-center" id="noRekBank" placeholder="123456789" min="0" required>
                 </div>
-                <div class="d-flex justify-content-center mt-1 mb-1">
-                  <div class="col-5">
-                    <label for="anBank" class="h6">Atas Nama*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="anBank" placeholder="Nama Nasabah" required>
-                  </div>
+                <div class="mt-2 text-center mb-1">
+                  <label for="anBank" class="h6 mb-1">Atas Nama*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="anBank" placeholder="Nama Nasabah" required>
                 </div>
               </div>
               <h6 class="text-center font-weight-bold">PEMBAYARAN SIMPANAN</h6>
               <div class="d-flex flex-column">
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-3">
-                    <label for="simpananPokok" class="h6">Pokok*</label>
-                  </div>
-                  <div class="col">
-                    <div class="row justify-content-around">
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="simpananPokok" id="pokok" value="300000" onchange="handleRadioChange(this)" checked>
-                        <label class="form-check-label" for="pokok">
-                          Rp 300.000
-                        </label>
-                      </div>
-                      <div class="form-check col-5">
-                        <input class="form-check-input" type="radio" name="simpananPokok" id="pokokLain" onchange="handleRadioChange(this)">
-                        <input type="number" class="form-control form-control-sm text-center" id="pokokLainInput" placeholder="400.000" onchange="updateRadioValue(this)" min="1" disabled>
-                      </div>
-                    </div>                                  
+                <div class="mt-2 text-center">
+                  <label class="h6 mb-1">Simpanan Pokok*</label>
+                  <div class="d-flex flex-column align-items-center gap-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="simpananPokok" id="pokok" value="300000" onchange="handleRadioChange(this)" checked>
+                      <label class="form-check-label" for="pokok">Rp 300.000</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="simpananPokok" id="pokokLain" onchange="handleRadioChange(this)">
+                      <input type="number" class="form-control form-control-sm text-center d-inline-block w-auto mt-1" id="pokokLainInput" placeholder="Nominal Lain" onchange="updateRadioValue(this)" min="1" disabled>
+                    </div>
                   </div>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-3">
-                    <label for="simpananWajib" class="h6">Wajib*</label>
-                  </div>
-                  <div class="col">
-                    <div class="row justify-content-around">
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="simpananWajib" id="wajib" value="600000" onchange="handleRadioChange(this)" checked>
-                        <label class="form-check-label" for="wajib">
-                          Rp 600.000
-                        </label>
-                      </div>
-                      <div class="form-check col-5">
-                        <input class="form-check-input" type="radio" name="simpananWajib" id="wajibLain" onchange="handleRadioChange(this)">
-                        <input type="number" class="form-control form-control-sm text-center" id="wajibLainInput" placeholder="800.000" onchange="updateRadioValue(this)" min="1" disabled>
-                      </div>
-                    </div>                                  
+                <div class="mt-2 text-center">
+                  <label class="h6 mb-1">Simpanan Wajib*</label>
+                  <div class="d-flex flex-column align-items-center gap-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="simpananWajib" id="wajib" value="600000" onchange="handleRadioChange(this)" checked>
+                      <label class="form-check-label" for="wajib">Rp 600.000</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="simpananWajib" id="wajibLain" onchange="handleRadioChange(this)">
+                      <input type="number" class="form-control form-control-sm text-center d-inline-block w-auto mt-1" id="wajibLainInput" placeholder="Nominal Lain" onchange="updateRadioValue(this)" min="1" disabled>
+                    </div>
                   </div>
                 </div>
-                <div class="d-flex justify-content-center mt-1">
-                  <div class="col-5">
-                    <label for="akunPembayaran" class="h6">Pembayaran*</label>
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control form-control-sm text-center" id="akunPembayaran" list="listPayments" placeholder="Cash" required>
+                <div class="mt-2 text-center">
+                  <label for="akunPembayaran" class="h6 mb-1">Pembayaran*</label>
+                  <input type="text" class="form-control form-control-sm text-center" id="akunPembayaran" list="listPayments" placeholder="Cash" required>
                     <datalist id="listPayments">
                       <option value="Cash">Cash</option>
                       <option value="BSI">BSI</option>

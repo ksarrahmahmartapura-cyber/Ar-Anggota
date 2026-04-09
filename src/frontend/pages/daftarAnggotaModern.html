@@ -138,10 +138,10 @@
 
 <body class="min-h-screen flex items-start sm:items-center justify-center py-4 sm:py-6 md:py-10 px-3 sm:px-4">
 
-  <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-3 gap-6 px-0 sm:px-4">
+  <div class="w-full max-w-4xl px-0 sm:px-4">
 
     <!-- Main Form -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="space-y-6">
       <div class="glass-card sm:rounded-[2.5rem] p-6 sm:p-10 transition-all">
         <!-- Header -->
         <div class="mb-8 text-center">
@@ -358,72 +358,8 @@
         </form>
       </div>
     </div>
-
-    <!-- Right Sidebar: Smart Summary Card -->
-    <div class="lg:col-span-1">
-      <div class="summary-card glass-card rounded-[2rem] p-6 space-y-6">
-        <h2 class="font-extrabold text-slate-800 text-lg flex items-center gap-2">
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          Ringkasan Input
-        </h2>
-
-        <div id="summary-empty" class="text-center py-10 space-y-3">
-          <div class="w-16 h-16 bg-slate-50 rounded-full mx-auto flex items-center justify-center">
-            <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-          </div>
-          <p class="text-xs text-slate-400 font-medium italic">Data Anda akan muncul di sini otomatis...</p>
-        </div>
-
-        <div id="summary-content" class="hidden space-y-6">
-          <div class="space-y-2">
-            <p id="sum-nama" class="text-sm font-bold text-slate-700"></p>
-            <p id="sum-nik" class="text-xs text-slate-400 font-medium"></p>
-            <p id="sum-age" class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded inline-block"></p>
-          </div>
-
-          <div id="sum-alamat-box" class="hidden p-3 bg-slate-50 rounded-2xl space-y-1">
-            <p class="text-[9px] font-bold text-slate-300 uppercase">Domisili</p>
-            <p id="sum-alamat" class="text-[11px] leading-relaxed text-slate-500 font-medium"></p>
-          </div>
-
-          <div class="pt-4 border-t border-slate-100">
-            <p class="text-[10px] font-extrabold text-slate-400 uppercase text-center mb-3">Rincian Setoran Awal</p>
-            <div class="space-y-1">
-              <div class="checkout-row">
-                <span class="text-xs text-slate-500">S. Pokok</span>
-                <span id="check-pokok" class="text-xs font-bold text-slate-800">Rp 0</span>
-              </div>
-              <div class="checkout-row">
-                <span class="text-xs text-slate-500">S. Wajib</span>
-                <span id="check-wajib" class="text-xs font-bold text-slate-800">Rp 0</span>
-              </div>
-              <div class="checkout-row !border-0 pt-4">
-                <span class="text-sm font-extrabold text-slate-800">TOTAL</span>
-                <span id="check-total" class="text-sm font-extrabold text-green-600 underline">Rp 0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-4 bg-yellow-50/50 rounded-2xl flex gap-3">
-          <div class="flex-shrink-0 text-yellow-500 mt-0.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <p class="text-[10px] leading-relaxed text-yellow-700">Data Anda tersimpan sebagai <b>Draft</b> otomatis di
-            perangkat ini.</p>
-        </div>
-      </div>
-    </div>
   </div>
+>
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay"
