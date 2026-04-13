@@ -50,6 +50,24 @@
       font-size: 0.75rem;
     }
 
+    /* Sembunyikan spinner bawaan browser di semua input number */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+    input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+    /* Rapikan tampilan date input */
+    input[type=date]::-webkit-calendar-picker-indicator {
+      opacity: 0.5;
+      cursor: pointer;
+    }
+    input[type=date] {
+      color-scheme: light;
+    }
+
     .input-field {
       @apply w-full px-4 py-3 rounded-2xl outline-none transition-all duration-300 text-sm;
       background: rgba(255, 255, 255, 0.6);
@@ -193,7 +211,7 @@
               </div>
               <div>
                 <label class="label-text">NIK (16 Digit)*</label>
-                <input type="number" id="nik" placeholder="630XXXXXXXXXXXXX" class="input-field"
+                <input type="text" inputmode="numeric" maxlength="16" id="nik" placeholder="630XXXXXXXXXXXXX" class="input-field"
                   oninput="validateNIK(this)">
                 <span id="nik-error" class="text-[9px] text-red-500 hidden font-bold">NIK harus 16 digit</span>
               </div>
@@ -209,7 +227,7 @@
               </div>
               <div>
                 <label class="label-text">Whatsapp*</label>
-                <input type="number" id="telpon" placeholder="08XXXXXXXXXX" class="input-field"
+                <input type="text" inputmode="numeric" maxlength="14" id="telpon" placeholder="08XXXXXXXXXX" class="input-field"
                   oninput="formatPhone(this)">
               </div>
               <div class="sm:col-span-2">
@@ -233,9 +251,9 @@
                 </div>
               </div>
               <input type="text" id="alamatKTP" placeholder="Jalan / Perumahan / No Rumah" class="input-field">
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <input type="number" id="rtKTP" placeholder="RT" class="input-field text-center">
-                <input type="number" id="rwKTP" placeholder="RW" class="input-field text-center">
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" inputmode="numeric" maxlength="3" id="rtKTP" placeholder="RT" class="input-field text-center">
+                <input type="text" inputmode="numeric" maxlength="3" id="rwKTP" placeholder="RW" class="input-field text-center">
                 <input type="text" id="kelDesaKTP" placeholder="Kelurahan" class="input-field">
                 <input type="text" id="kecKTP" placeholder="Kecamatan" class="input-field">
               </div>
@@ -250,9 +268,9 @@
                 </label>
               </div>
               <input type="text" id="alamatTinggal" placeholder="Jalan / Perumahan / No Rumah" class="input-field">
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <input type="number" id="rtTinggal" placeholder="RT" class="input-field text-center">
-                <input type="number" id="rwTinggal" placeholder="RW" class="input-field text-center">
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" inputmode="numeric" maxlength="3" id="rtTinggal" placeholder="RT" class="input-field text-center">
+                <input type="text" inputmode="numeric" maxlength="3" id="rwTinggal" placeholder="RW" class="input-field text-center">
                 <input type="text" id="kelDesaTinggal" placeholder="Kelurahan" class="input-field">
                 <input type="text" id="kecTinggal" placeholder="Kecamatan" class="input-field">
               </div>
@@ -285,7 +303,7 @@
               <label class="label-text">Keluarga Yang Bisa Dihubungi (Darurat)</label>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                 <input type="text" id="keluargaTidakSerumah" placeholder="Nama Lengkap" class="input-field">
-                <input type="number" id="telponKeluargaTidakSerumah" placeholder="Nomor Whatsapp" class="input-field">
+                <input type="text" inputmode="numeric" maxlength="14" id="telponKeluargaTidakSerumah" placeholder="Nomor Whatsapp" class="input-field">
               </div>
             </div>
           </div>
