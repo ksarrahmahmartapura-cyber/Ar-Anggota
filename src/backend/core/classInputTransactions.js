@@ -119,13 +119,19 @@ class InputTransactions {
       const idMember = this.createIdMember(lastRowMaster);
       lastRowMaster++; // Increment for next member
 
+      // Ensure phone number has a leading quote for Sheets
+      if (memberData.telponAnggota && !String(memberData.telponAnggota).startsWith("'")) {
+        memberData.telponAnggota = "'" + memberData.telponAnggota;
+      }
+
       const startMonth = DateHelper.getStartOfMonth(memberData.tanggalBergabung);
       const totalMonth = memberData.simpananWajib / this.simpananWajib;
       const lastMonth = new Date(startMonth);
       lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
 
-      // Profile Row
-      memberRows.push(MemberService.prepareMasterRow(idMember, memberData));
+      // Save Profile Row immediately (Consistent with individual form)
+      const profileRow = MemberService.prepareMasterRow(idMember, memberData);
+      this.sheetMaster.appendRow(profileRow);
 
       // SP Row
       allRows.push([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran]);
@@ -141,15 +147,13 @@ class InputTransactions {
       addTransactions.postSimpanan();
     });
 
-    // Save Profiles to Master Anggota in Bulk
-    if (memberRows.length > 0) {
-      this.sheetMaster.getRange(this.sheetMaster.getLastRow() + 1, 1, memberRows.length, memberRows[0].length).setValues(memberRows);
-    }
-
     // Save Transactions in Bulk
     if (allRows.length > 0) {
       this.sheetTransactions.getRange(this.sheetTransactions.getLastRow() + 1, 1, allRows.length, 14).setValues(allRows);
     }
+
+    // Flush all changes to Spreadsheet
+    SpreadsheetApp.flush();
 
     let msg = `${membersArray.length - skipCount} anggota berhasil diproses.`;
     if (skipCount > 0) msg += ` (${skipCount} data dilewati karena NIK sudah terdaftar)`;
