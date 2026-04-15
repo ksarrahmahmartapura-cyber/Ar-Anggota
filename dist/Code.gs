@@ -242,6 +242,7 @@ class InputTransactions {
     let skipCount = 0;
     let repairCount = 0;
 
+    const errors = [];
     membersArray.forEach((member, index) => {
       // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
       const memberData = member.data || member;
@@ -292,11 +293,12 @@ class InputTransactions {
         this.sheetTransactions.appendRow(spRow);
         this.sheetTransactions.appendRow(swRow);
         
-        memberData.idMember = idMember;
-        const addTransactions = new Transactions({ method: 'addMember', data: memberData });
-        addTransactions.postSimpanan();
+        // HAPUS call postSimpanan() sementara untuk tes jika ini yang bikin konflik
+        // memberData.idMember = idMember;
+        // const addTransactions = new Transactions({ method: 'addMember', data: memberData });
+        // addTransactions.postSimpanan();
       } catch (err) {
-        console.error(`Error pada baris ${index + 1}: ${err.message}`);
+        errors.push(`Baris ${index + 1} (${memberData.namaAnggota}): ${err.message}`);
       }
     });
 
@@ -304,13 +306,15 @@ class InputTransactions {
 
     let msg = `${membersArray.length - skipCount} anggota diproses.`;
     if (repairCount > 0) msg += ` (NIK ${repairCount} orang sudah ada: Memperbarui Transaksi)`;
-    msg += ` (Cek Sheet Transaksi Baris Terakhir)`;
+    if (errors.length > 0) msg += ` (Ditemukan ${errors.length} ERROR simpan transaksi!)`;
+    msg += ` (Cek Sheet Transaksi di Spreadsheet ID: ${CONFIG.SS_ID_TRANSACTIONS})`;
 
     return { 
-      success: true, 
+      success: errors.length === 0, 
       message: msg, 
+      errors: errors,
       count: membersArray.length - skipCount,
-      skipped: skipCount 
+      repaired: repairCount
     };
   }
 
