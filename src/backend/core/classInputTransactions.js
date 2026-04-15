@@ -110,9 +110,18 @@ class InputTransactions {
     let skipCount = 0;
     let repairCount = 0;
 
-    membersArray.forEach(member => {
+    membersArray.forEach((member, index) => {
       // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
       const memberData = member.data || member;
+      
+      // Pembersihan Data (TRIM & PARSE)
+      Object.keys(memberData).forEach(key => {
+        if (typeof memberData[key] === 'string') memberData[key] = memberData[key].trim();
+      });
+
+      // Pastikan nominal adalah angka murni
+      memberData.simpananPokok = Number(String(memberData.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
+      memberData.simpananWajib = Number(String(memberData.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
       
       let idMember;
       let isNewMember = true;
@@ -120,54 +129,50 @@ class InputTransactions {
       // Validasi Duplikat NIK & Mode Perbaikan
       const existingId = existingNiksMapping[String(memberData.nik)];
       if (existingId) {
-        // Mode Perbaikan: Pakai ID lama, lewati pembuatan profil baru, tapi tetap kirim transaksi
         idMember = existingId;
         isNewMember = false;
         repairCount++;
       } else {
         idMember = this.createIdMember(lastRowMaster);
-        lastRowMaster++; // Increment for next member
+        lastRowMaster++; 
       }
       
-      // Ensure phone number has a leading quote for Sheets
       if (memberData.telponAnggota && !String(memberData.telponAnggota).startsWith("'")) {
         memberData.telponAnggota = "'" + memberData.telponAnggota;
       }
 
       const startMonth = DateHelper.getStartOfMonth(memberData.tanggalBergabung);
-      const totalMonth = memberData.simpananWajib / this.simpananWajib;
+      const totalMonth = Math.floor(memberData.simpananWajib / this.simpananWajib);
       const lastMonth = new Date(startMonth);
-      lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
+      lastMonth.setMonth(lastMonth.getMonth() + (totalMonth > 0 ? totalMonth - 1 : 0));
 
-      // Save Profile Row ONLY if it's a new member
-      if (isNewMember) {
-        const profileRow = MemberService.prepareMasterRow(idMember, memberData);
-        this.sheetMaster.appendRow(profileRow);
+      try {
+        // Save Profile Row ONLY if it's a new member
+        if (isNewMember) {
+          const profileRow = MemberService.prepareMasterRow(idMember, memberData);
+          this.sheetMaster.appendRow(profileRow);
+        }
+
+        // Save Transactions immediately
+        const spRow = [null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran];
+        const swRow = [null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran];
+        
+        this.sheetTransactions.appendRow(spRow);
+        this.sheetTransactions.appendRow(swRow);
+        
+        memberData.idMember = idMember;
+        const addTransactions = new Transactions({ method: 'addMember', data: memberData });
+        addTransactions.postSimpanan();
+      } catch (err) {
+        console.error(`Error pada baris ${index + 1}: ${err.message}`);
       }
-
-      // Save Transactions immediately (Always do this in Repair Mode)
-      const spRow = [null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran];
-      const swRow = [null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran];
-      
-      this.sheetTransactions.appendRow(spRow);
-      this.sheetTransactions.appendRow(swRow);
-      
-      // Update member with ID for external API call
-      memberData.idMember = idMember;
-      
-      // Call external API for each member (passing ONLY the data part)
-      const memberParams = { method: 'addMember', data: memberData };
-      const addTransactions = new Transactions(memberParams);
-      addTransactions.postSimpanan();
     });
 
-    // Flush all changes to Spreadsheet
     SpreadsheetApp.flush();
 
-    let msg = `${membersArray.length - skipCount} anggota berhasil diproses.`;
-    if (repairCount > 0) msg += ` (${repairCount} data disusulkan transaksinya karena profil sudah ada)`;
-    if (skipCount > 0) msg += ` (${skipCount} data dilewati karena NIK sudah terdaftar)`;
-    msg += ` (Profil & Transaksi tersimpan)`;
+    let msg = `${membersArray.length - skipCount} anggota diproses.`;
+    if (repairCount > 0) msg += ` (NIK ${repairCount} orang sudah ada: Memperbarui Transaksi)`;
+    msg += ` (Cek Sheet Transaksi Baris Terakhir)`;
 
     return { 
       success: true, 
