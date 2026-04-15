@@ -262,7 +262,13 @@
             google.script.run
                 .withSuccessHandler(res => {
                     btn.textContent = "Selesai!";
-                    addLog(`Berhasil memproses ${res.count} anggota dalam satu paket!`, 'text-green-400 font-bold');
+                    if (res.message) {
+                        // Log pesan detil dari backend (termasuk Last Row)
+                        addLog(res.message, 'text-green-400 font-bold whitespace-pre-wrap');
+                    }
+                    if (res.errors && res.errors.length > 0) {
+                        res.errors.forEach(err => addLog(`ERROR: ${err}`, 'text-red-400'));
+                    }
                     addLog("--- PROSES SELESAI ---");
                     importData.forEach((_, i) => updateRowStatus(i, 'success'));
                 })

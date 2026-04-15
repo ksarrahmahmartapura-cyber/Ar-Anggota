@@ -235,7 +235,6 @@ class InputTransactions {
   addMembersBulk(membersArray) {
     const memberRows = [];
     let lastRowMaster = this.sheetMaster.getLastRow();
-    const formattedDate = DateHelper.formatToDMY(new Date());
     
     // Ambil data NIK yang sudah ada untuk validasi duplikat & mode perbaikan
     const existingNiksMapping = MemberService.getExistingNIKs();
@@ -247,13 +246,19 @@ class InputTransactions {
     const sheetTxName = this.sheetTransactions.getName();
 
     membersArray.forEach((member, index) => {
-      // ... (keep the normalization and repair logic)
+      // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
       const memberData = member.data || member;
+      
+      // Pembersihan Data (TRIM & PARSE)
       Object.keys(memberData).forEach(key => {
         if (typeof memberData[key] === 'string') memberData[key] = memberData[key].trim();
       });
+
+      // Pastikan nominal adalah angka murni
       memberData.simpananPokok = Number(String(memberData.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
       memberData.simpananWajib = Number(String(memberData.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
+      
+      const formattedDate = DateHelper.formatToDMY(memberData.tanggalBergabung || new Date());
       
       let idMember;
       let isNewMember = true;
