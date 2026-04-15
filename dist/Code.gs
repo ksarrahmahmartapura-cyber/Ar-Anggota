@@ -65,13 +65,15 @@ function processPendingMember(action, rowIndex) {
 }
 
 function processMembersBulk(membersArray) {
-  const processor = new InputTransactions({ method: 'bulk', data: {} });
-  return processor.addMembersBulk(membersArray);
+  const params = { method: 'addMembersBulk', data: membersArray };
+  const tx = new Transactions(params);
+  return tx.postTransactions();
 }
 
 function processBatchApproval(indices) {
-  const processor = new InputTransactions({ method: 'bulk', data: {} });
-  return processor.approvePendingBulk(indices);
+  const params = { method: 'approvePendingBulk', data: indices };
+  const tx = new Transactions(params);
+  return tx.postTransactions();
 }
 
 function getFormUrl() {
@@ -211,6 +213,8 @@ class InputTransactions {
       case 'addMember':
         this.private_processAddMember();
         break;
+      case 'addMembersBulk':
+        return this.addMembersBulk(this.data);
       case 'transactionsSimp':
         this.private_processBulkTransactions();
         break;
@@ -218,6 +222,8 @@ class InputTransactions {
         return this.private_addPending();
       case 'approveMember':
         return this.private_approveMember();
+      case 'approvePendingBulk':
+        return this.approvePendingBulk(this.data);
       case 'rejectMember':
         return this.private_rejectMember();
     }
@@ -336,24 +342,36 @@ class Transactions {
         payload: JSON.stringify(this.dataSend),
       };
       const responseTransactions = await UrlFetchApp.fetch(this.apiTransactions, options);
-    this.handleNotification(responseTransactions);
+      this.handleNotification(responseTransactions);
+      return JSON.parse(responseTransactions.getContentText());
     }
     catch (error) {      
-      responseTransactions = { success: false, message: 'Error: ' + error.message };
+      return { success: false, message: 'Error: ' + error.message };
     }
   }
 
   async postSimpanan(){
-    let options = {
-        method: 'post',
-        contentType: 'application/json',
-        payload: JSON.stringify(this.dataSend),
-      };    
-    const responseSimpanan = await UrlFetchApp.fetch(this.apiSavingsAccount, options)
-    this.handleNotification(responseSimpanan);
+    try {
+      let options = {
+          method: 'post',
+          contentType: 'application/json',
+          payload: JSON.stringify(this.dataSend),
+        };    
+      const responseSimpanan = await UrlFetchApp.fetch(this.apiSavingsAccount, options)
+      this.handleNotification(responseSimpanan);
+      return JSON.parse(responseSimpanan.getContentText());
+    } catch (error) {
+      return { success: false, message: 'Error: ' + error.message };
+    }
   }
 
   handleNotification(response){
+    // Skip modal dialog if UI is not available (Web App context)
+    try {
+      SpreadsheetApp.getUi();
+    } catch (e) {
+      return; 
+    }
     var template = HtmlService.createTemplateFromFile('notification');
     template.data = response;
     var htmlOutput = template.evaluate()
@@ -368,8 +386,10 @@ class Transactions {
 function doPost(e) {
   let data = JSON.parse(e.postData.contents);
   let newPost = new InputTransactions(data);
-  newPost.transactionEntries();
-  }
+  let result = newPost.transactionEntries();
+  return ContentService.createTextOutput(JSON.stringify(result || { success: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
 // ===== newTransaction.js =====
 

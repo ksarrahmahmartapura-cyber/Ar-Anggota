@@ -14,24 +14,36 @@ class Transactions {
         payload: JSON.stringify(this.dataSend),
       };
       const responseTransactions = await UrlFetchApp.fetch(this.apiTransactions, options);
-    this.handleNotification(responseTransactions);
+      this.handleNotification(responseTransactions);
+      return JSON.parse(responseTransactions.getContentText());
     }
     catch (error) {      
-      responseTransactions = { success: false, message: 'Error: ' + error.message };
+      return { success: false, message: 'Error: ' + error.message };
     }
   }
 
   async postSimpanan(){
-    let options = {
-        method: 'post',
-        contentType: 'application/json',
-        payload: JSON.stringify(this.dataSend),
-      };    
-    const responseSimpanan = await UrlFetchApp.fetch(this.apiSavingsAccount, options)
-    this.handleNotification(responseSimpanan);
+    try {
+      let options = {
+          method: 'post',
+          contentType: 'application/json',
+          payload: JSON.stringify(this.dataSend),
+        };    
+      const responseSimpanan = await UrlFetchApp.fetch(this.apiSavingsAccount, options)
+      this.handleNotification(responseSimpanan);
+      return JSON.parse(responseSimpanan.getContentText());
+    } catch (error) {
+      return { success: false, message: 'Error: ' + error.message };
+    }
   }
 
   handleNotification(response){
+    // Skip modal dialog if UI is not available (Web App context)
+    try {
+      SpreadsheetApp.getUi();
+    } catch (e) {
+      return; 
+    }
     var template = HtmlService.createTemplateFromFile('notification');
     template.data = response;
     var htmlOutput = template.evaluate()

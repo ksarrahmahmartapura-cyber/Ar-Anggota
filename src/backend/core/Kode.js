@@ -62,13 +62,15 @@ function processPendingMember(action, rowIndex) {
 }
 
 function processMembersBulk(membersArray) {
-  const processor = new InputTransactions({ method: 'bulk', data: {} });
-  return processor.addMembersBulk(membersArray);
+  const params = { method: 'addMembersBulk', data: membersArray };
+  const tx = new Transactions(params);
+  return tx.postTransactions();
 }
 
 function processBatchApproval(indices) {
-  const processor = new InputTransactions({ method: 'bulk', data: {} });
-  return processor.approvePendingBulk(indices);
+  const params = { method: 'approvePendingBulk', data: indices };
+  const tx = new Transactions(params);
+  return tx.postTransactions();
 }
 
 function getFormUrl() {

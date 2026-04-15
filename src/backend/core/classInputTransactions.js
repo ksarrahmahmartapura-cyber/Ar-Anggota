@@ -81,6 +81,8 @@ class InputTransactions {
       case 'addMember':
         this.private_processAddMember();
         break;
+      case 'addMembersBulk':
+        return this.addMembersBulk(this.data);
       case 'transactionsSimp':
         this.private_processBulkTransactions();
         break;
@@ -88,6 +90,8 @@ class InputTransactions {
         return this.private_addPending();
       case 'approveMember':
         return this.private_approveMember();
+      case 'approvePendingBulk':
+        return this.approvePendingBulk(this.data);
       case 'rejectMember':
         return this.private_rejectMember();
     }
