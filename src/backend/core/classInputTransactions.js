@@ -33,6 +33,10 @@ class InputTransactions {
     const lastMonth = new Date(startMonth);
     lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
 
+    // Save Profile to Master Anggota
+    const profileRow = MemberService.prepareMasterRow(idMember, this.data);
+    this.sheetMaster.appendRow(profileRow);
+
     const rows = [
       [null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota", this.data.simpananPokok, null, this.saldoSimpanan, this.data.akunPembayaran],
       [null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota", this.data.simpananWajib, null, this.saldoSimpanan, this.data.akunPembayaran]
@@ -94,37 +98,68 @@ class InputTransactions {
 
   addMembersBulk(membersArray) {
     const allRows = [];
+    const memberRows = [];
     let lastRowMaster = this.sheetMaster.getLastRow();
     const formattedDate = DateHelper.formatToDMY(new Date());
+    
+    // Ambil data NIK yang sudah ada untuk validasi duplikat
+    const existingNiks = MemberService.getExistingNIKs();
+    let skipCount = 0;
 
     membersArray.forEach(member => {
+      // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
+      const memberData = member.data || member;
+      
+      // Validasi Duplikat NIK
+      if (existingNiks.includes(String(memberData.nik))) {
+        skipCount++;
+        return; // Skip member ini
+      }
+      
       const idMember = this.createIdMember(lastRowMaster);
       lastRowMaster++; // Increment for next member
 
-      const startMonth = DateHelper.getStartOfMonth(member.tanggalBergabung);
-      const totalMonth = member.simpananWajib / this.simpananWajib;
+      const startMonth = DateHelper.getStartOfMonth(memberData.tanggalBergabung);
+      const totalMonth = memberData.simpananWajib / this.simpananWajib;
       const lastMonth = new Date(startMonth);
       lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
 
+      // Profile Row
+      memberRows.push(MemberService.prepareMasterRow(idMember, memberData));
+
       // SP Row
-      allRows.push([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", member.simpananPokok, null, this.saldoSimpanan, member.akunPembayaran]);
+      allRows.push([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran]);
       // SW Row
-      allRows.push([null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", member.simpananWajib, null, this.saldoSimpanan, member.akunPembayaran]);
+      allRows.push([null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran]);
       
-      // Update member with ID for external API call if needed
-      member.idMember = idMember;
+      // Update member with ID for external API call
+      memberData.idMember = idMember;
       
-      // Call external API for each member (as per current design)
-      const memberParams = { method: 'addMember', data: member };
+      // Call external API for each member (passing ONLY the data part)
+      const memberParams = { method: 'addMember', data: memberData };
       const addTransactions = new Transactions(memberParams);
       addTransactions.postSimpanan();
     });
 
+    // Save Profiles to Master Anggota in Bulk
+    if (memberRows.length > 0) {
+      this.sheetMaster.getRange(this.sheetMaster.getLastRow() + 1, 1, memberRows.length, memberRows[0].length).setValues(memberRows);
+    }
+
+    // Save Transactions in Bulk
     if (allRows.length > 0) {
       this.sheetTransactions.getRange(this.sheetTransactions.getLastRow() + 1, 1, allRows.length, 14).setValues(allRows);
     }
 
-    return { success: true, message: `${membersArray.length} anggota berhasil diproses.` };
+    let msg = `${membersArray.length - skipCount} anggota berhasil diproses.`;
+    if (skipCount > 0) msg += ` (${skipCount} data dilewati karena NIK sudah terdaftar)`;
+
+    return { 
+      success: true, 
+      message: msg, 
+      count: membersArray.length - skipCount,
+      skipped: skipCount 
+    };
   }
 
   approvePendingBulk(indices) {

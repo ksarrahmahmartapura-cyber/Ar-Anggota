@@ -163,6 +163,10 @@ class InputTransactions {
     const lastMonth = new Date(startMonth);
     lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
 
+    // Save Profile to Master Anggota
+    const profileRow = MemberService.prepareMasterRow(idMember, this.data);
+    this.sheetMaster.appendRow(profileRow);
+
     const rows = [
       [null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota", this.data.simpananPokok, null, this.saldoSimpanan, this.data.akunPembayaran],
       [null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota", this.data.simpananWajib, null, this.saldoSimpanan, this.data.akunPembayaran]
@@ -224,37 +228,68 @@ class InputTransactions {
 
   addMembersBulk(membersArray) {
     const allRows = [];
+    const memberRows = [];
     let lastRowMaster = this.sheetMaster.getLastRow();
     const formattedDate = DateHelper.formatToDMY(new Date());
+    
+    // Ambil data NIK yang sudah ada untuk validasi duplikat
+    const existingNiks = MemberService.getExistingNIKs();
+    let skipCount = 0;
 
     membersArray.forEach(member => {
+      // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
+      const memberData = member.data || member;
+      
+      // Validasi Duplikat NIK
+      if (existingNiks.includes(String(memberData.nik))) {
+        skipCount++;
+        return; // Skip member ini
+      }
+      
       const idMember = this.createIdMember(lastRowMaster);
       lastRowMaster++; // Increment for next member
 
-      const startMonth = DateHelper.getStartOfMonth(member.tanggalBergabung);
-      const totalMonth = member.simpananWajib / this.simpananWajib;
+      const startMonth = DateHelper.getStartOfMonth(memberData.tanggalBergabung);
+      const totalMonth = memberData.simpananWajib / this.simpananWajib;
       const lastMonth = new Date(startMonth);
       lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
 
+      // Profile Row
+      memberRows.push(MemberService.prepareMasterRow(idMember, memberData));
+
       // SP Row
-      allRows.push([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", member.simpananPokok, null, this.saldoSimpanan, member.akunPembayaran]);
+      allRows.push([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran]);
       // SW Row
-      allRows.push([null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", member.simpananWajib, null, this.saldoSimpanan, member.akunPembayaran]);
+      allRows.push([null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran]);
       
-      // Update member with ID for external API call if needed
-      member.idMember = idMember;
+      // Update member with ID for external API call
+      memberData.idMember = idMember;
       
-      // Call external API for each member (as per current design)
-      const memberParams = { method: 'addMember', data: member };
+      // Call external API for each member (passing ONLY the data part)
+      const memberParams = { method: 'addMember', data: memberData };
       const addTransactions = new Transactions(memberParams);
       addTransactions.postSimpanan();
     });
 
+    // Save Profiles to Master Anggota in Bulk
+    if (memberRows.length > 0) {
+      this.sheetMaster.getRange(this.sheetMaster.getLastRow() + 1, 1, memberRows.length, memberRows[0].length).setValues(memberRows);
+    }
+
+    // Save Transactions in Bulk
     if (allRows.length > 0) {
       this.sheetTransactions.getRange(this.sheetTransactions.getLastRow() + 1, 1, allRows.length, 14).setValues(allRows);
     }
 
-    return { success: true, message: `${membersArray.length} anggota berhasil diproses.` };
+    let msg = `${membersArray.length - skipCount} anggota berhasil diproses.`;
+    if (skipCount > 0) msg += ` (${skipCount} data dilewati karena NIK sudah terdaftar)`;
+
+    return { 
+      success: true, 
+      message: msg, 
+      count: membersArray.length - skipCount,
+      skipped: skipCount 
+    };
   }
 
   approvePendingBulk(indices) {
@@ -359,14 +394,41 @@ const MemberService = {
   },
 
   /**
+   * Menyiapkan baris untuk sheet Master Anggota
+   */
+  prepareMasterRow(idMember, data) {
+    return [
+      idMember,
+      data.tanggalBergabung, data.namaAnggota, data.nik, data.tempatLahir,
+      data.tanggalLahir, data.jenisKelamin, data.telponAnggota, data.email,
+      data.alamatKTP, data.alamatTinggal, data.jenisPekerjaan, data.kantorPekerjaan,
+      data.alamatKantor, data.namaBank, data.noRekBank, data.anBank,
+      data.simpananPokok, data.simpananWajib, data.akunPembayaran
+    ];
+  },
+
+  /**
    */
   mapRowToMember(rowData) {
     return {
-      tanggalBergabung: rowData[0], 
-      namaAnggota: rowData[1], 
+      tanggalBergabung: rowData[0],
+      namaAnggota: rowData[1],
       nik: rowData[2],
-      simpananPokok: rowData[16], 
-      simpananWajib: rowData[17], 
+      tempatLahir: rowData[3],
+      tanggalLahir: rowData[4],
+      jenisKelamin: rowData[5],
+      telponAnggota: rowData[6],
+      email: rowData[7],
+      alamatKTP: rowData[8],
+      alamatTinggal: rowData[9],
+      jenisPekerjaan: rowData[10],
+      kantorPekerjaan: rowData[11],
+      alamatKantor: rowData[12],
+      namaBank: rowData[13],
+      noRekBank: rowData[14],
+      anBank: rowData[15],
+      simpananPokok: rowData[16],
+      simpananWajib: rowData[17],
       akunPembayaran: rowData[18]
     };
   },
@@ -387,6 +449,25 @@ const MemberService = {
         wajib: row[18]
       };
     });
+  },
+
+  /**
+   * Mendapat semua NIK yang sudah terdaftar di Master & Pending
+   */
+  getExistingNIKs() {
+    const ssMember = SpreadsheetApp.openById(CONFIG.SS_ID_MEMBER);
+    const sheetMaster = ssMember.getSheetByName(CONFIG.SHEET_NAMES.MASTER_ANGGOTA);
+    const sheetPending = ssMember.getSheetByName(CONFIG.SHEET_NAMES.PENDING_PENDAFTARAN);
+
+    const masterNiks = sheetMaster.getLastRow() > 1 
+      ? sheetMaster.getRange(2, 4, sheetMaster.getLastRow() - 1, 1).getValues().flat() 
+      : [];
+    
+    const pendingNiks = sheetPending.getLastRow() > 1 
+      ? sheetPending.getRange(2, 4, sheetPending.getLastRow() - 1, 1).getValues().flat() 
+      : [];
+
+    return [...new Set([...masterNiks, ...pendingNiks])].map(String);
   }
 };
 
