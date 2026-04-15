@@ -243,23 +243,20 @@ class InputTransactions {
     let repairCount = 0;
 
     const errors = [];
+    const sheetMasterName = this.sheetMaster.getName();
+    const sheetTxName = this.sheetTransactions.getName();
+
     membersArray.forEach((member, index) => {
-      // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
+      // ... (keep the normalization and repair logic)
       const memberData = member.data || member;
-      
-      // Pembersihan Data (TRIM & PARSE)
       Object.keys(memberData).forEach(key => {
         if (typeof memberData[key] === 'string') memberData[key] = memberData[key].trim();
       });
-
-      // Pastikan nominal adalah angka murni
       memberData.simpananPokok = Number(String(memberData.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
       memberData.simpananWajib = Number(String(memberData.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
       
       let idMember;
       let isNewMember = true;
-
-      // Validasi Duplikat NIK & Mode Perbaikan
       const existingId = existingNiksMapping[String(memberData.nik)];
       if (existingId) {
         idMember = existingId;
@@ -280,34 +277,26 @@ class InputTransactions {
       lastMonth.setMonth(lastMonth.getMonth() + (totalMonth > 0 ? totalMonth - 1 : 0));
 
       try {
-        // Save Profile Row ONLY if it's a new member
         if (isNewMember) {
-          const profileRow = MemberService.prepareMasterRow(idMember, memberData);
-          this.sheetMaster.appendRow(profileRow);
+          this.sheetMaster.appendRow(MemberService.prepareMasterRow(idMember, memberData));
         }
-
-        // Save Transactions immediately
-        const spRow = [null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran];
-        const swRow = [null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran];
-        
-        this.sheetTransactions.appendRow(spRow);
-        this.sheetTransactions.appendRow(swRow);
-        
-        // HAPUS call postSimpanan() sementara untuk tes jika ini yang bikin konflik
-        // memberData.idMember = idMember;
-        // const addTransactions = new Transactions({ method: 'addMember', data: memberData });
-        // addTransactions.postSimpanan();
+        this.sheetTransactions.appendRow([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran]);
+        this.sheetTransactions.appendRow([null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran]);
       } catch (err) {
-        errors.push(`Baris ${index + 1} (${memberData.namaAnggota}): ${err.message}`);
+        errors.push(`${memberData.namaAnggota}: ${err.message}`);
       }
     });
 
     SpreadsheetApp.flush();
 
-    let msg = `${membersArray.length - skipCount} anggota diproses.`;
-    if (repairCount > 0) msg += ` (NIK ${repairCount} orang sudah ada: Memperbarui Transaksi)`;
-    if (errors.length > 0) msg += ` (Ditemukan ${errors.length} ERROR simpan transaksi!)`;
-    msg += ` (Cek Sheet Transaksi di Spreadsheet ID: ${CONFIG.SS_ID_TRANSACTIONS})`;
+    const finalMasterRow = this.sheetMaster.getLastRow();
+    const finalTxRow = this.sheetTransactions.getLastRow();
+
+    let msg = `${membersArray.length - skipCount} data diproses. `;
+    msg += `\n- Profil: Sheet "${sheetMasterName}" (Last Row: ${finalMasterRow})`;
+    msg += `\n- Transaksi: Sheet "${sheetTxName}" (Last Row: ${finalTxRow})`;
+    if (repairCount > 0) msg += `\n- Info: ${repairCount} NIK lama ditemukan & disusulkan transaksinya.`;
+    if (errors.length > 0) msg += `\n- ⚠️ WARNING: ${errors.length} error ditemukan!`;
 
     return { 
       success: errors.length === 0, 
