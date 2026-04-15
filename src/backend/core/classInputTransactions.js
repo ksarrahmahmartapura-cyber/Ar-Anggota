@@ -101,28 +101,34 @@ class InputTransactions {
   }
 
   addMembersBulk(membersArray) {
-    const allRows = [];
     const memberRows = [];
     let lastRowMaster = this.sheetMaster.getLastRow();
     const formattedDate = DateHelper.formatToDMY(new Date());
     
-    // Ambil data NIK yang sudah ada untuk validasi duplikat
-    const existingNiks = MemberService.getExistingNIKs();
+    // Ambil data NIK yang sudah ada untuk validasi duplikat & mode perbaikan
+    const existingNiksMapping = MemberService.getExistingNIKs();
     let skipCount = 0;
+    let repairCount = 0;
 
     membersArray.forEach(member => {
       // Pastikan data member diambil dari properti .data jika ada (struktur dari frontend)
       const memberData = member.data || member;
       
-      // Validasi Duplikat NIK
-      if (existingNiks.includes(String(memberData.nik))) {
-        skipCount++;
-        return; // Skip member ini
+      let idMember;
+      let isNewMember = true;
+
+      // Validasi Duplikat NIK & Mode Perbaikan
+      const existingId = existingNiksMapping[String(memberData.nik)];
+      if (existingId) {
+        // Mode Perbaikan: Pakai ID lama, lewati pembuatan profil baru, tapi tetap kirim transaksi
+        idMember = existingId;
+        isNewMember = false;
+        repairCount++;
+      } else {
+        idMember = this.createIdMember(lastRowMaster);
+        lastRowMaster++; // Increment for next member
       }
       
-      const idMember = this.createIdMember(lastRowMaster);
-      lastRowMaster++; // Increment for next member
-
       // Ensure phone number has a leading quote for Sheets
       if (memberData.telponAnggota && !String(memberData.telponAnggota).startsWith("'")) {
         memberData.telponAnggota = "'" + memberData.telponAnggota;
@@ -133,14 +139,18 @@ class InputTransactions {
       const lastMonth = new Date(startMonth);
       lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
 
-      // Save Profile Row immediately (Consistent with individual form)
-      const profileRow = MemberService.prepareMasterRow(idMember, memberData);
-      this.sheetMaster.appendRow(profileRow);
+      // Save Profile Row ONLY if it's a new member
+      if (isNewMember) {
+        const profileRow = MemberService.prepareMasterRow(idMember, memberData);
+        this.sheetMaster.appendRow(profileRow);
+      }
 
-      // SP Row
-      allRows.push([null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran]);
-      // SW Row
-      allRows.push([null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran]);
+      // Save Transactions immediately (Always do this in Repair Mode)
+      const spRow = [null, formattedDate, "SP", null, idMember, null, null, null, null, "Pendaftaran Anggota (Bulk)", memberData.simpananPokok, null, this.saldoSimpanan, memberData.akunPembayaran];
+      const swRow = [null, formattedDate, "SW", null, idMember, null, DateHelper.formatToDMY(startMonth), totalMonth, DateHelper.formatToDMY(lastMonth), "Pendaftaran Anggota (Bulk)", memberData.simpananWajib, null, this.saldoSimpanan, memberData.akunPembayaran];
+      
+      this.sheetTransactions.appendRow(spRow);
+      this.sheetTransactions.appendRow(swRow);
       
       // Update member with ID for external API call
       memberData.idMember = idMember;
@@ -151,16 +161,13 @@ class InputTransactions {
       addTransactions.postSimpanan();
     });
 
-    // Save Transactions in Bulk
-    if (allRows.length > 0) {
-      this.sheetTransactions.getRange(this.sheetTransactions.getLastRow() + 1, 1, allRows.length, 14).setValues(allRows);
-    }
-
     // Flush all changes to Spreadsheet
     SpreadsheetApp.flush();
 
     let msg = `${membersArray.length - skipCount} anggota berhasil diproses.`;
+    if (repairCount > 0) msg += ` (${repairCount} data disusulkan transaksinya karena profil sudah ada)`;
     if (skipCount > 0) msg += ` (${skipCount} data dilewati karena NIK sudah terdaftar)`;
+    msg += ` (Profil & Transaksi tersimpan)`;
 
     return { 
       success: true, 

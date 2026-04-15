@@ -71,21 +71,24 @@ const MemberService = {
   },
 
   /**
-   * Mendapat semua NIK yang sudah terdaftar di Master & Pending
+   * Mendapat semua NIK yang sudah terdaftar beserta ID Member-nya
+   * @returns {Object} Mapping NIK -> idMember
    */
   getExistingNIKs() {
     const ssMember = SpreadsheetApp.openById(CONFIG.SS_ID_MEMBER);
     const sheetMaster = ssMember.getSheetByName(CONFIG.SHEET_NAMES.MASTER_ANGGOTA);
-    const sheetPending = ssMember.getSheetByName(CONFIG.SHEET_NAMES.PENDING_PENDAFTARAN);
-
-    const masterNiks = sheetMaster.getLastRow() > 1 
-      ? sheetMaster.getRange(2, 4, sheetMaster.getLastRow() - 1, 1).getValues().flat() 
-      : [];
     
-    const pendingNiks = sheetPending.getLastRow() > 1 
-      ? sheetPending.getRange(2, 4, sheetPending.getLastRow() - 1, 1).getValues().flat() 
-      : [];
+    if (sheetMaster.getLastRow() <= 1) return {};
 
-    return [...new Set([...masterNiks, ...pendingNiks])].map(String);
+    const data = sheetMaster.getRange(2, 1, sheetMaster.getLastRow() - 1, 4).getValues();
+    const mapping = {};
+    
+    data.forEach(row => {
+      const id = String(row[0]); // Kolom A
+      const nik = String(row[3]); // Kolom D
+      if (nik) mapping[nik] = id;
+    });
+
+    return mapping;
   }
 };
