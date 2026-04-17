@@ -13,6 +13,18 @@
     if (el) el.textContent = value;
   }
 
+  function getValue(id, fallback = '') {
+    return byId(id)?.value ?? fallback;
+  }
+
+  function getCheckedValue(name, fallback = '') {
+    return document.querySelector(`input[name="${name}"]:checked`)?.value ?? fallback;
+  }
+
+  function buildAddress(prefix) {
+    return `${getValue(`alamat${prefix}`)} RT.${getValue(`rt${prefix}`)} RW.${getValue(`rw${prefix}`)} Kel.${getValue(`kelDesa${prefix}`)} Kec.${getValue(`kec${prefix}`)}`.trim();
+  }
+
   // --- SMART FEATURES: AUTO-FORMATTING ---
   function formatName(el) {
     el.value = el.value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
@@ -240,32 +252,42 @@
 
     const formData = {
       tanggalBergabung: new Date().toISOString().split('T')[0],
-      namaAnggota: byId('namaLengkap').value,
-      nik: byId('nik').value,
-      tempatLahir: byId('tempatLahir').value,
-      tanggalLahir: byId('tanggalLahir').value,
-      jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked')?.value || "Lelaki",
-      telponAnggota: "'" + byId('telpon').value,
-      email: byId('email').value,
-      alamatKTP: `${byId('alamatKTP').value} RT.${byId('rtKTP').value} RW.${byId('rwKTP').value} Kel.${byId('kelDesaKTP').value} Kec.${byId('kecKTP').value}`,
-      alamatTinggal: `${byId('alamatTinggal').value} RT.${byId('rtTinggal').value} RW.${byId('rwTinggal').value} Kel.${byId('kelDesaTinggal').value} Kec.${byId('kecTinggal').value}`,
-      jenisPekerjaan: byId('jenisPekerjaan').value,
-      kantorPekerjaan: byId('kantorPekerjaan').value,
-      alamatKantor: byId('alamatKantor').value,
-      simpananPokok: byId('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value,
-      simpananWajib: byId('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value,
-      akunPembayaran: document.querySelector('input[name="akunPembayaran"]:checked').value
+      namaAnggota: getValue('namaLengkap'),
+      nik: getValue('nik'),
+      tempatLahir: getValue('tempatLahir'),
+      tanggalLahir: getValue('tanggalLahir'),
+      jenisKelamin: getCheckedValue('jenisKelamin', 'Lelaki'),
+      telponAnggota: "'" + getValue('telpon'),
+      email: getValue('email'),
+      alamatKTP: buildAddress('KTP'),
+      alamatTinggal: buildAddress('Tinggal'),
+      jenisPekerjaan: getValue('jenisPekerjaan'),
+      kantorPekerjaan: getValue('kantorPekerjaan'),
+      alamatKantor: getValue('alamatKantor'),
+      namaBank: getValue('namaBank'),
+      noRekBank: getValue('noRekBank'),
+      anBank: getValue('anBank'),
+      simpananPokok: getValue('pokokLain') || getCheckedValue('simpananPokok'),
+      simpananWajib: getValue('wajibLain') || getCheckedValue('simpananWajib'),
+      akunPembayaran: getCheckedValue('akunPembayaran')
     };
 
-    google.script.run.withSuccessHandler((res) => {
-      localStorage.removeItem('kks_form_draft');
-      loadingOverlay.innerHTML = `
-        <div class="text-green-500 text-6xl mb-6">✓</div>
-        <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Pendaftaran Terkirim!</h2>
-        <p class="text-slate-400 mb-8 max-w-xs mx-auto">${res.message}</p>
-        <button onclick="google.script.host.close()" class="px-12 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-black transition-all">Selesai</button>
-      `;
-    }).newTransaction({
+    google.script.run
+      .withSuccessHandler((res) => {
+        localStorage.removeItem('kks_form_draft');
+        loadingOverlay.innerHTML = `
+          <div class="text-green-500 text-6xl mb-6">✓</div>
+          <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Pendaftaran Terkirim!</h2>
+          <p class="text-slate-400 mb-8 max-w-xs mx-auto">${res.message}</p>
+          <button onclick="google.script.host.close()" class="px-12 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-black transition-all">Selesai</button>
+        `;
+      })
+      .withFailureHandler((err) => {
+        loadingOverlay.classList.add('hidden');
+        const message = err?.message || 'Terjadi kesalahan saat mengirim pendaftaran.';
+        alert(message);
+      })
+      .newTransaction({
       method: 'addPending',
       sheet: 'simpanan',
       data: formData
