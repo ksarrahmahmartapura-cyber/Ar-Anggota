@@ -407,8 +407,8 @@ function doPost(e) {
 var addTransactions;
 
 function newTransaction(params) {
-  addTransactions = new Transactions(params);
-  addTransactions.postTransactions();
+  addTransactions = new InputTransactions(params);
+  return addTransactions.transactionEntries();
 }
 
 
