@@ -4,6 +4,15 @@
   const form = document.getElementById('wizardForm');
   const loadingOverlay = document.getElementById('loadingOverlay');
 
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function setText(id, value) {
+    const el = byId(id);
+    if (el) el.textContent = value;
+  }
+
   // --- SMART FEATURES: AUTO-FORMATTING ---
   function formatName(el) {
     el.value = el.value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
@@ -16,13 +25,13 @@
   }
 
   function validateNIK(el) {
-    const error = document.getElementById('nik-error');
+    const error = byId('nik-error');
     if (el.value.length !== 16) {
       el.classList.add('border-yellow-300');
-      error.classList.remove('hidden');
+      if (error) error.classList.remove('hidden');
     } else {
       el.classList.remove('border-yellow-300');
-      error.classList.add('hidden');
+      if (error) error.classList.add('hidden');
     }
     updateLiveSummary();
   }
@@ -33,7 +42,8 @@
     const diff = Date.now() - dob.getTime();
     const age = new Date(diff).getUTCFullYear() - 1970;
 
-    const badge = document.getElementById('age-badge');
+    const badge = byId('age-badge');
+    if (!badge) return;
     let gen = "";
     const year = dob.getFullYear();
     if (year >= 1997 && year <= 2012) gen = "Gen Z";
@@ -48,28 +58,32 @@
   // --- SMART FEATURES: AUTO-FILL ADDRESS ---
   async function autoFillAddress(el, type) {
     if (el.value.length === 5) {
-      const loading = document.getElementById(`pos-loading-${type}`);
-      loading.classList.remove('hidden');
+      const loading = byId(`pos-loading-${type}`);
+      if (loading) loading.classList.remove('hidden');
       try {
         setTimeout(() => {
           if (el.value === "70611") {
-            document.getElementById(`kelDesa${type}`).value = "Jawa";
-            document.getElementById(`kec${type}`).value = "Martapura";
+            byId(`kelDesa${type}`).value = "Jawa";
+            byId(`kec${type}`).value = "Martapura";
           } else if (el.value === "70619") {
-            document.getElementById(`kelDesa${type}`).value = "Indrasari";
-            document.getElementById(`kec${type}`).value = "Martapura";
+            byId(`kelDesa${type}`).value = "Indrasari";
+            byId(`kec${type}`).value = "Martapura";
           }
-          loading.classList.add('hidden');
+          if (loading) loading.classList.add('hidden');
           updateLiveSummary();
         }, 800);
-      } catch (e) { loading.classList.add('hidden'); }
+      } catch (e) {
+        if (loading) loading.classList.add('hidden');
+      }
     }
   }
 
   function copyAddress(cb) {
     if (cb.checked) {
       ['alamat', 'rt', 'rw', 'kelDesa', 'kec'].forEach(f => {
-        document.getElementById(`${f}Tinggal`).value = document.getElementById(`${f}KTP`).value;
+        const target = byId(`${f}Tinggal`);
+        const source = byId(`${f}KTP`);
+        if (target && source) target.value = source.value;
       });
     }
     updateLiveSummary();
@@ -132,43 +146,63 @@
 
   // --- LIVE SUMMARY & CHECKOUT ---
   function updateCheckout() {
-    const pokok = document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value;
-    const wajib = document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value;
+    const pokokCustom = byId('pokokLain');
+    const wajibCustom = byId('wajibLain');
+    const pokokChecked = document.querySelector('input[name="simpananPokok"]:checked');
+    const wajibChecked = document.querySelector('input[name="simpananWajib"]:checked');
+    const pokok = pokokCustom?.value || pokokChecked?.value || '0';
+    const wajib = wajibCustom?.value || wajibChecked?.value || '0';
 
     const total = parseInt(pokok) + parseInt(wajib);
 
-    document.getElementById('check-pokok').textContent = `Rp ${parseInt(pokok).toLocaleString()}`;
-    document.getElementById('check-wajib').textContent = `Rp ${parseInt(wajib).toLocaleString()}`;
-    document.getElementById('check-total').textContent = `Rp ${total.toLocaleString()}`;
+    setText('check-pokok', `Rp ${parseInt(pokok).toLocaleString()}`);
+    setText('check-wajib', `Rp ${parseInt(wajib).toLocaleString()}`);
+    setText('check-total', `Rp ${total.toLocaleString()}`);
 
     updateLiveSummary();
   }
 
   function updateLiveSummary() {
-    const nama = document.getElementById('namaLengkap').value;
-    const summaryEmpty = document.getElementById('summary-empty');
-    const summaryContent = document.getElementById('summary-content');
+    const nama = byId('namaLengkap')?.value || '';
+    const summaryEmpty = byId('summary-empty');
+    const summaryContent = byId('summary-content');
+
+    if (!summaryEmpty || !summaryContent) return;
 
     if (nama.length > 2) {
       summaryEmpty.classList.add('hidden');
       summaryContent.classList.remove('hidden');
 
-      document.getElementById('sum-nama').textContent = nama;
-      document.getElementById('sum-nik').textContent = `NIK: ${document.getElementById('nik').value || '---'}`;
-      document.getElementById('sum-age').textContent = document.getElementById('age-badge').textContent;
+      setText('sum-nama', nama);
+      setText('sum-nik', `NIK: ${byId('nik')?.value || '---'}`);
+      setText('sum-age', byId('age-badge')?.textContent || '');
 
-      const alamat = document.getElementById('alamatTinggal').value;
+      const alamat = byId('alamatTinggal')?.value || '';
       if (alamat) {
-        document.getElementById('sum-alamat-box').classList.remove('hidden');
-        document.getElementById('sum-alamat').textContent = `${alamat}, RT.${document.getElementById('rtTinggal').value}/${document.getElementById('rwTinggal').value}, ${document.getElementById('kelDesaTinggal').value}`;
+        byId('sum-alamat-box')?.classList.remove('hidden');
+        setText(
+          'sum-alamat',
+          `${alamat}, RT.${byId('rtTinggal')?.value || '-'}/${byId('rwTinggal')?.value || '-'}, ${byId('kelDesaTinggal')?.value || ''}`
+        );
       }
+    } else {
+      summaryEmpty.classList.remove('hidden');
+      summaryContent.classList.add('hidden');
     }
   }
 
   // --- DATA PERSISTENCE: DRAFT ---
   function saveToDraft() {
     const data = {};
-    document.querySelectorAll('input, select').forEach(el => {
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+      if (el.type === 'radio') {
+        if (el.checked) data[`radio:${el.name}`] = el.value;
+        return;
+      }
+      if (el.type === 'checkbox') {
+        if (el.id) data[`checkbox:${el.id}`] = el.checked;
+        return;
+      }
       if (el.id) data[el.id] = el.value;
     });
     localStorage.setItem('kks_form_draft', JSON.stringify(data));
@@ -179,11 +213,23 @@
     if (draft) {
       const data = JSON.parse(draft);
       for (const key in data) {
-        const el = document.getElementById(key);
+        if (key.startsWith('radio:')) {
+          const name = key.replace('radio:', '');
+          const radio = document.querySelector(`input[name="${name}"][value="${data[key]}"]`);
+          if (radio) radio.checked = true;
+          continue;
+        }
+        if (key.startsWith('checkbox:')) {
+          const checkbox = byId(key.replace('checkbox:', ''));
+          if (checkbox) checkbox.checked = Boolean(data[key]);
+          continue;
+        }
+        const el = byId(key);
         if (el) el.value = data[key];
       }
       updateCheckout();
-      detectAge(document.getElementById('tanggalLahir'));
+      const birthDate = byId('tanggalLahir');
+      if (birthDate) detectAge(birthDate);
     }
   }
 
@@ -194,20 +240,20 @@
 
     const formData = {
       tanggalBergabung: new Date().toISOString().split('T')[0],
-      namaAnggota: document.getElementById('namaLengkap').value,
-      nik: document.getElementById('nik').value,
-      tempatLahir: document.getElementById('tempatLahir').value,
-      tanggalLahir: document.getElementById('tanggalLahir').value,
+      namaAnggota: byId('namaLengkap').value,
+      nik: byId('nik').value,
+      tempatLahir: byId('tempatLahir').value,
+      tanggalLahir: byId('tanggalLahir').value,
       jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked')?.value || "Lelaki",
-      telponAnggota: "'" + document.getElementById('telpon').value,
-      email: document.getElementById('email').value,
-      alamatKTP: `${document.getElementById('alamatKTP').value} RT.${document.getElementById('rtKTP').value} RW.${document.getElementById('rwKTP').value} Kel.${document.getElementById('kelDesaKTP').value} Kec.${document.getElementById('kecKTP').value}`,
-      alamatTinggal: `${document.getElementById('alamatTinggal').value} RT.${document.getElementById('rtTinggal').value} RW.${document.getElementById('rwTinggal').value} Kel.${document.getElementById('kelDesaTinggal').value} Kec.${document.getElementById('kecTinggal').value}`,
-      jenisPekerjaan: document.getElementById('jenisPekerjaan').value,
-      kantorPekerjaan: document.getElementById('kantorPekerjaan').value,
-      alamatKantor: document.getElementById('alamatKantor').value,
-      simpananPokok: document.getElementById('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value,
-      simpananWajib: document.getElementById('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value,
+      telponAnggota: "'" + byId('telpon').value,
+      email: byId('email').value,
+      alamatKTP: `${byId('alamatKTP').value} RT.${byId('rtKTP').value} RW.${byId('rwKTP').value} Kel.${byId('kelDesaKTP').value} Kec.${byId('kecKTP').value}`,
+      alamatTinggal: `${byId('alamatTinggal').value} RT.${byId('rtTinggal').value} RW.${byId('rwTinggal').value} Kel.${byId('kelDesaTinggal').value} Kec.${byId('kecTinggal').value}`,
+      jenisPekerjaan: byId('jenisPekerjaan').value,
+      kantorPekerjaan: byId('kantorPekerjaan').value,
+      alamatKantor: byId('alamatKantor').value,
+      simpananPokok: byId('pokokLain').value || document.querySelector('input[name="simpananPokok"]:checked').value,
+      simpananWajib: byId('wajibLain').value || document.querySelector('input[name="simpananWajib"]:checked').value,
       akunPembayaran: document.querySelector('input[name="akunPembayaran"]:checked').value
     };
 
