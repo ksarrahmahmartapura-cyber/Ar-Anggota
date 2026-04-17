@@ -12,7 +12,7 @@ class InputTransactions {
     return SpreadsheetApp.openById(CONFIG.SS_ID_TRANSACTIONS).getSheetByName(CONFIG.SHEET_NAMES.TRANSAKSI);
   }
   get sheetPending() {
-    return SpreadsheetApp.openById(CONFIG.SS_ID_MEMBER).getSheetByName(CONFIG.SHEET_NAMES.PENDING_PENDAFTARAN);
+    return SpreadsheetApp.openById(CONFIG.SS_ID_PENDING).getSheetByName(CONFIG.SHEET_NAMES.PENDING_PENDAFTARAN);
   }
   get sheetMaster() {
     return SpreadsheetApp.openById(CONFIG.SS_ID_MEMBER).getSheetByName(CONFIG.SHEET_NAMES.MASTER_ANGGOTA);

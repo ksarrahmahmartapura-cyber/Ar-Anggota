@@ -53,7 +53,7 @@ const MemberService = {
   },
 
   getPendingData() {
-    const ss = SpreadsheetApp.openById(CONFIG.SS_ID_MEMBER).getSheetByName(CONFIG.SHEET_NAMES.PENDING_PENDAFTARAN);
+    const ss = SpreadsheetApp.openById(CONFIG.SS_ID_PENDING).getSheetByName(CONFIG.SHEET_NAMES.PENDING_PENDAFTARAN);
     const data = ss.getDataRange().getValues();
     if (data.length <= 1) return [];
     
