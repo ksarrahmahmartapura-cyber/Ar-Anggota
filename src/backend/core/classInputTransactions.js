@@ -26,9 +26,14 @@ class InputTransactions {
 
   private_processAddMember() {
     const idMember = this.createIdMember();
+    
+    // Konversi ke angka & sanitasi (hapus karakter non-digit)
+    this.data.simpananPokok = Number(String(this.data.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
+    this.data.simpananWajib = Number(String(this.data.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
+
     const formattedDate = DateHelper.formatToDMY(this.data.tanggalBergabung);
     const startMonth = DateHelper.getStartOfMonth(this.data.tanggalBergabung);
-    const totalMonth = this.data.simpananWajib / this.simpananWajib;
+    const totalMonth = Math.floor(this.data.simpananWajib / this.simpananWajib);
     
     const lastMonth = new Date(startMonth);
     lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
@@ -54,6 +59,10 @@ class InputTransactions {
   }
 
   private_addPending() {
+    // Sanitasi data angka sebelum disimpan
+    this.data.simpananPokok = Number(String(this.data.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
+    this.data.simpananWajib = Number(String(this.data.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
+
     const row = MemberService.preparePendingRow(this.data);
     this.sheetPending.appendRow(row);
     return { success: true, message: 'Data pendaftaran berhasil disimpan.' };
