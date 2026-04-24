@@ -89,12 +89,12 @@ class InputTransactions {
     switch (this.method) {
       case 'addMember':
         this.private_processAddMember();
-        break;
+        return { success: true, message: 'Anggota berhasil didaftarkan.' };
       case 'addMembersBulk':
         return this.addMembersBulk(this.data);
       case 'transactionsSimp':
         this.private_processBulkTransactions();
-        break;
+        return { success: true, message: 'Transaksi berhasil disimpan.' };
       case 'addPending':
         return this.private_addPending();
       case 'approveMember':
@@ -104,9 +104,9 @@ class InputTransactions {
       case 'rejectMember':
         return this.private_rejectMember();
     }
-    
-    const addTransactions = new Transactions(this.params);
-    addTransactions.postSimpanan();
+
+    // Fallback: dipanggil hanya jika method tidak dikenali
+    return { success: false, message: 'Method tidak dikenal: ' + this.method };
   }
 
   addMembersBulk(membersArray) {
