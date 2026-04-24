@@ -102,23 +102,27 @@
         <div class="grid grid-cols-2 lg:grid-cols-6 gap-2">
             <div class="p-2 bg-slate-50 rounded-lg text-center">
                 <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 1-10</p>
-                <p class="text-[9px] font-bold text-slate-600">Data Profil & Alamat</p>
-            </div>
-            <div class="p-2 bg-slate-50 rounded-lg text-center border border-green-100">
-                <p class="text-[8px] font-bold text-green-500 uppercase">Kolom 11-15</p>
-                <p class="text-[9px] font-bold text-slate-600">Data Keluarga</p>
+                <p class="text-[9px] font-bold text-slate-600">Profil & Alamat</p>
             </div>
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 16-18</p>
-                <p class="text-[9px] font-bold text-slate-600">Data Pekerjaan</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 11-13</p>
+                <p class="text-[9px] font-bold text-slate-600">Pekerjaan</p>
             </div>
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 19-21</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 14-16</p>
                 <p class="text-[9px] font-bold text-slate-600">Data Bank</p>
             </div>
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 22-24</p>
-                <p class="text-[9px] font-bold text-slate-600">Simpanan & Bayar</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 17-19</p>
+                <p class="text-[9px] font-bold text-slate-600">Simpanan</p>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg text-center border border-green-100">
+                <p class="text-[8px] font-bold text-green-500 uppercase">Kolom 20-24 ✨</p>
+                <p class="text-[9px] font-bold text-slate-600">Keluarga (Opsional)</p>
+            </div>
+            <div class="p-2 bg-green-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-green-500 uppercase">Tip</p>
+                <p class="text-[9px] font-bold text-slate-600">Template lama (19 kol) tetap bisa dipakai!</p>
             </div>
         </div>
 
@@ -191,20 +195,21 @@
                         email: row[7] || '',
                         alamatKTP: row[8] || '',
                         alamatTinggal: row[9] || '',
-                        keluargaSerumah: row[10] || '',
-                        hubunganKeluargaSerumah: row[11] || '',
-                        telponKeluargaSerumah: row[12] || '',
-                        keluargaTidakSerumah: row[13] || '',
-                        telponKeluargaTidakSerumah: row[14] || '',
-                        jenisPekerjaan: row[15] || '',
-                        kantorPekerjaan: row[16] || '',
-                        alamatKantor: row[17] || '',
-                        namaBank: row[18] || '',
-                        noRekBank: row[19] || '',
-                        anBank: row[20] || '',
-                        simpananPokok: row[21] || '300000',
-                        simpananWajib: row[22] || '600000',
-                        akunPembayaran: row[23] || 'Cash'
+                        jenisPekerjaan: row[10] || '',
+                        kantorPekerjaan: row[11] || '',
+                        alamatKantor: row[12] || '',
+                        namaBank: row[13] || '',
+                        noRekBank: row[14] || '',
+                        anBank: row[15] || '',
+                        simpananPokok: row[16] || '300000',
+                        simpananWajib: row[17] || '600000',
+                        akunPembayaran: row[18] || 'Cash',
+                        // Kolom opsional (20-24) — kompatibel dengan template lama
+                        keluargaSerumah: row[19] || '',
+                        hubunganKeluargaSerumah: row[20] || '',
+                        telponKeluargaSerumah: row[21] || '',
+                        keluargaTidakSerumah: row[22] || '',
+                        telponKeluargaTidakSerumah: row[23] || ''
                     }
                 };
             });
@@ -310,11 +315,6 @@
                 "Email",
                 "Alamat KTP",
                 "Alamat Domisili",
-                "Keluarga Serumah (Nama)",
-                "Hubungan Keluarga",
-                "No. Telp Keluarga Serumah",
-                "Keluarga Tdk Serumah (Nama)",
-                "No. Telp Keluarga Tdk Serumah",
                 "Jenis Pekerjaan",
                 "Nama Kantor",
                 "Alamat Kantor",
@@ -323,7 +323,12 @@
                 "Atas Nama Bank",
                 "Simpanan Pokok",
                 "Simpanan Wajib",
-                "Akun Pembayaran (Cash/Transfer)"
+                "Akun Pembayaran (Cash/Transfer)",
+                "[OPSIONAL] Keluarga Serumah (Nama)",
+                "[OPSIONAL] Hubungan Keluarga",
+                "[OPSIONAL] No. Telp Keluarga Serumah",
+                "[OPSIONAL] Keluarga Tdk Serumah (Nama)",
+                "[OPSIONAL] No. Telp Keluarga Tdk Serumah"
             ];
             const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
             const encodedUri = encodeURI(csvContent);
