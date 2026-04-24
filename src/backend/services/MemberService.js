@@ -6,8 +6,11 @@ const MemberService = {
       new Date(),
       data.tanggalBergabung, data.namaAnggota, data.nik, data.tempatLahir,
       data.tanggalLahir, data.jenisKelamin, data.telponAnggota, data.email,
-      data.alamatKTP, data.alamatTinggal, data.jenisPekerjaan, data.kantorPekerjaan,
-      data.alamatKantor, data.namaBank, data.noRekBank, data.anBank,
+      data.alamatKTP, data.alamatTinggal, 
+      data.keluargaSerumah, data.hubunganKeluargaSerumah, data.telponKeluargaSerumah,
+      data.keluargaTidakSerumah, data.telponKeluargaTidakSerumah,
+      data.jenisPekerjaan, data.kantorPekerjaan, data.alamatKantor, 
+      data.namaBank, data.noRekBank, data.anBank,
       data.simpananPokok, data.simpananWajib, data.akunPembayaran
     ];
   },
@@ -20,8 +23,11 @@ const MemberService = {
       idMember,
       data.tanggalBergabung, data.namaAnggota, data.nik, data.tempatLahir,
       data.tanggalLahir, data.jenisKelamin, data.telponAnggota, data.email,
-      data.alamatKTP, data.alamatTinggal, data.jenisPekerjaan, data.kantorPekerjaan,
-      data.alamatKantor, data.namaBank, data.noRekBank, data.anBank,
+      data.alamatKTP, data.alamatTinggal, 
+      data.keluargaSerumah, data.hubunganKeluargaSerumah, data.telponKeluargaSerumah,
+      data.keluargaTidakSerumah, data.telponKeluargaTidakSerumah,
+      data.jenisPekerjaan, data.kantorPekerjaan, data.alamatKantor, 
+      data.namaBank, data.noRekBank, data.anBank,
       data.simpananPokok, data.simpananWajib, data.akunPembayaran
     ];
   },
@@ -40,15 +46,20 @@ const MemberService = {
       email: rowData[8],
       alamatKTP: rowData[9],
       alamatTinggal: rowData[10],
-      jenisPekerjaan: rowData[11],
-      kantorPekerjaan: rowData[12],
-      alamatKantor: rowData[13],
-      namaBank: rowData[14],
-      noRekBank: rowData[15],
-      anBank: rowData[16],
-      simpananPokok: rowData[17],
-      simpananWajib: rowData[18],
-      akunPembayaran: rowData[19]
+      keluargaSerumah: rowData[11],
+      hubunganKeluargaSerumah: rowData[12],
+      telponKeluargaSerumah: rowData[13],
+      keluargaTidakSerumah: rowData[14],
+      telponKeluargaTidakSerumah: rowData[15],
+      jenisPekerjaan: rowData[16],
+      kantorPekerjaan: rowData[17],
+      alamatKantor: rowData[18],
+      namaBank: rowData[19],
+      noRekBank: rowData[20],
+      anBank: rowData[21],
+      simpananPokok: rowData[22],
+      simpananWajib: rowData[23],
+      akunPembayaran: rowData[24]
     };
   },
 
