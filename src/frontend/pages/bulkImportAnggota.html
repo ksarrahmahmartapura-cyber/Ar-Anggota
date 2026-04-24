@@ -324,20 +324,22 @@
                 "Simpanan Pokok",
                 "Simpanan Wajib",
                 "Akun Pembayaran (Cash/Transfer)",
-                "[OPSIONAL] Keluarga Serumah (Nama)",
-                "[OPSIONAL] Hubungan Keluarga",
-                "[OPSIONAL] No. Telp Keluarga Serumah",
-                "[OPSIONAL] Keluarga Tdk Serumah (Nama)",
-                "[OPSIONAL] No. Telp Keluarga Tdk Serumah"
+                "Keluarga Serumah - Nama",
+                "Keluarga Serumah - Hubungan",
+                "Keluarga Serumah - No Telp",
+                "Keluarga Tdk Serumah - Nama",
+                "Keluarga Tdk Serumah - No Telp"
             ];
-            const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
-            const encodedUri = encodeURI(csvContent);
+            const csvContent = headers.join(",");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", "Template_Import_Anggota.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
