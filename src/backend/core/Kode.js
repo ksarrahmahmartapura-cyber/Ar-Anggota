@@ -9,7 +9,46 @@ function onOpen() {
     .addItem('Pendaftaran Modern', 'fnDaftarAnggotaModern')
     .addItem('Bulk Import Anggota', 'fnBulkImportAnggota')
     .addItem('Approval Pendaftaran', 'fnApprovalDashboard')
+    .addItem('Bantu Insert Data Rudi', 'sendRudiData')
     .addToUi();
+}
+
+function sendRudiData() {
+  const data = {
+    tanggalBergabung: "2026-04-17",
+    namaAnggota: "Rudi Maulana S",
+    nik: "6303112803930001",
+    tempatLahir: "Martapura",
+    tanggalLahir: "1993-03-28",
+    jenisKelamin: "Laki-Laki",
+    telponAnggota: "'085348690354",
+    email: "rudimaulana2312@gmail.com",
+    alamatKTP: "Jl. IR Pangeran Muhammad Noor RT. 05 RW. 02 Kel/Desa Awang Bangkal Barat Kec. Karang Intan 71352",
+    alamatTinggal: "Jl. IR Pangeran Muhammad Noor RT. 05 RW. 02 Kel/Desa Awang Bangkal Barat Kec. Karang Intan 71352",
+    keluargaSerumah: "Hairil Fitriana",
+    hubunganKeluargaSerumah: "Istri",
+    telponKeluargaSerumah: "'082350909169",
+    keluargaTidakSerumah: "Hairil Fitriana",
+    telponKeluargaTidakSerumah: "'082350909169",
+    jenisPekerjaan: "Aparatur Sipil Negara (ASN)",
+    kantorPekerjaan: "Rutan Kelas II B Barabai",
+    alamatKantor: "Hulu Sungai Tengah, Kalimantan Selatan 71352 RT. 00 RW. 00 Kel/Desa Barabai Kec. Barabai 71352",
+    namaBank: "BRI",
+    noRekBank: "14301026729509",
+    anBank: "Rudi Maulana S",
+    simpananPokok: "300000",
+    simpananWajib: "600000",
+    akunPembayaran: "BSI"
+  };
+
+  const params = {
+    method: 'addMember',
+    sheet: 'simpanan',
+    data: data
+  };
+
+  const result = newTransaction(params);
+  SpreadsheetApp.getUi().alert(result.message);
 }
 
 function fnDaftarAnggotaModern() {
