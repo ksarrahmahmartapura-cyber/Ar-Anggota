@@ -453,9 +453,12 @@
     }
   }
   function updateRadioValue(radioElement) {
-    var inputId = radioElement.id;
-    var valueId = inputId.substr(0,5);
-    document.getElementById(valueId + "Lain").value = document.getElementById(inputId).value;
+    var inputId = radioElement.id; // pokokLainInput
+    var valueId = inputId.substr(0,5); // pokok
+    var radioBtn = document.getElementById(valueId + "Lain");
+    if (radioBtn) {
+      radioBtn.value = radioElement.value;
+    }
   }
   
   function handleRadioChange(radioElement) {
@@ -465,12 +468,11 @@
     if (condition == "Lain"){
       var inputNumber = document.getElementById(inputId + "Input") ;
       inputNumber.disabled = false;
-      inputId.value = inputNumber.value;
-
+      radioElement.value = inputNumber.value;
     } else {
       var inputNumber = document.getElementById(inputId + "LainInput");
       inputNumber.disabled = true;
-      inputId.value = " ";
+      // No need to reset value here as the radio button already has its static value from HTML
     }
   }
 </script>
@@ -520,10 +522,17 @@
             
       document.getElementById('loading').style.display = 'block'; // Show loading indicator        
       document.getElementById('submit').style.display = 'none';
-      google.script.run.withSuccessHandler(function() {          
-        document.getElementById('loading').style.display = 'none'; // Hide loading indicator
-        google.script.host.close();
-      }).newTransaction({
+      google.script.run
+        .withSuccessHandler(function() {          
+          document.getElementById('loading').style.display = 'none'; // Hide loading indicator
+          google.script.host.close();
+        })
+        .withFailureHandler(function(err) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('submit').style.display = 'block';
+          alert("Gagal mengirim data: " + (err.message || err));
+        })
+        .newTransaction({
         method: 'addMember',
         sheet: 'simpanan',
         data: {

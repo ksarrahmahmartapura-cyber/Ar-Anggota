@@ -101,28 +101,28 @@
         <!-- Instructions / Legend -->
         <div class="grid grid-cols-2 lg:grid-cols-6 gap-2">
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 1</p>
-                <p class="text-[9px] font-bold text-slate-600">Tgl Daftar</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 1-10</p>
+                <p class="text-[9px] font-bold text-slate-600">Profil & Alamat</p>
             </div>
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 2</p>
-                <p class="text-[9px] font-bold text-slate-600">Nama</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 11-13</p>
+                <p class="text-[9px] font-bold text-slate-600">Pekerjaan</p>
             </div>
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 3</p>
-                <p class="text-[9px] font-bold text-slate-600">NIK</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 14-16</p>
+                <p class="text-[9px] font-bold text-slate-600">Data Bank</p>
             </div>
             <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 4</p>
-                <p class="text-[9px] font-bold text-slate-600">Tmp Lahir</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 17-19</p>
+                <p class="text-[9px] font-bold text-slate-600">Simpanan</p>
             </div>
-            <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 5</p>
-                <p class="text-[9px] font-bold text-slate-600">Tgl Lahir</p>
+            <div class="p-2 bg-slate-50 rounded-lg text-center border border-green-100">
+                <p class="text-[8px] font-bold text-green-500 uppercase">Kolom 20-24 ✨</p>
+                <p class="text-[9px] font-bold text-slate-600">Keluarga (Opsional)</p>
             </div>
-            <div class="p-2 bg-slate-50 rounded-lg text-center">
-                <p class="text-[8px] font-bold text-slate-400 uppercase">Kolom 6-19</p>
-                <p class="text-[9px] font-bold text-slate-600">Data Lain...</p>
+            <div class="p-2 bg-green-50 rounded-lg text-center">
+                <p class="text-[8px] font-bold text-green-500 uppercase">Tip</p>
+                <p class="text-[9px] font-bold text-slate-600">Template lama (19 kol) tetap bisa dipakai!</p>
             </div>
         </div>
 
@@ -190,7 +190,7 @@
                         nik: row[2] || '',
                         tempatLahir: row[3] || '',
                         tanggalLahir: row[4] || '',
-                        jenisKelamin: row[5] || 'Lelaki',
+                        jenisKelamin: row[5] || 'Laki-Laki',
                         telponAnggota: row[6] || '',
                         email: row[7] || '',
                         alamatKTP: row[8] || '',
@@ -203,7 +203,13 @@
                         anBank: row[15] || '',
                         simpananPokok: row[16] || '300000',
                         simpananWajib: row[17] || '600000',
-                        akunPembayaran: row[18] || 'Cash'
+                        akunPembayaran: row[18] || 'Cash',
+                        // Kolom opsional (20-24) — kompatibel dengan template lama
+                        keluargaSerumah: row[19] || '',
+                        hubunganKeluargaSerumah: row[20] || '',
+                        telponKeluargaSerumah: row[21] || '',
+                        keluargaTidakSerumah: row[22] || '',
+                        telponKeluargaTidakSerumah: row[23] || ''
                     }
                 };
             });
@@ -304,7 +310,7 @@
                 "NIK",
                 "Tempat Lahir",
                 "Tanggal Lahir (YYYY-MM-DD)",
-                "Jenis Kelamin (Lelaki/Wanita)",
+                "Jenis Kelamin (Laki-Laki/Perempuan)",
                 "No. WA",
                 "Email",
                 "Alamat KTP",
@@ -317,16 +323,23 @@
                 "Atas Nama Bank",
                 "Simpanan Pokok",
                 "Simpanan Wajib",
-                "Akun Pembayaran (Cash/Transfer)"
+                "Akun Pembayaran (Cash/Transfer)",
+                "Keluarga Serumah - Nama",
+                "Keluarga Serumah - Hubungan",
+                "Keluarga Serumah - No Telp",
+                "Keluarga Tdk Serumah - Nama",
+                "Keluarga Tdk Serumah - No Telp"
             ];
-            const csvContent = "data:text/csv;charset=utf-8," + headers.join(",");
-            const encodedUri = encodeURI(csvContent);
+            const csvContent = headers.join(",");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", "Template_Import_Anggota.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>

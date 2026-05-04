@@ -12,7 +12,46 @@ function onOpen() {
     .addItem('Pendaftaran Modern', 'fnDaftarAnggotaModern')
     .addItem('Bulk Import Anggota', 'fnBulkImportAnggota')
     .addItem('Approval Pendaftaran', 'fnApprovalDashboard')
+    .addItem('Bantu Insert Data Rudi', 'sendRudiData')
     .addToUi();
+}
+
+function sendRudiData() {
+  const data = {
+    tanggalBergabung: "2026-04-17",
+    namaAnggota: "Rudi Maulana S",
+    nik: "6303112803930001",
+    tempatLahir: "Martapura",
+    tanggalLahir: "1993-03-28",
+    jenisKelamin: "Laki-Laki",
+    telponAnggota: "'085348690354",
+    email: "rudimaulana2312@gmail.com",
+    alamatKTP: "Jl. IR Pangeran Muhammad Noor RT. 05 RW. 02 Kel/Desa Awang Bangkal Barat Kec. Karang Intan 71352",
+    alamatTinggal: "Jl. IR Pangeran Muhammad Noor RT. 05 RW. 02 Kel/Desa Awang Bangkal Barat Kec. Karang Intan 71352",
+    keluargaSerumah: "Hairil Fitriana",
+    hubunganKeluargaSerumah: "Istri",
+    telponKeluargaSerumah: "'082350909169",
+    keluargaTidakSerumah: "Hairil Fitriana",
+    telponKeluargaTidakSerumah: "'082350909169",
+    jenisPekerjaan: "Aparatur Sipil Negara (ASN)",
+    kantorPekerjaan: "Rutan Kelas II B Barabai",
+    alamatKantor: "Hulu Sungai Tengah, Kalimantan Selatan 71352 RT. 00 RW. 00 Kel/Desa Barabai Kec. Barabai 71352",
+    namaBank: "BRI",
+    noRekBank: "14301026729509",
+    anBank: "Rudi Maulana S",
+    simpananPokok: "300000",
+    simpananWajib: "600000",
+    akunPembayaran: "BSI"
+  };
+
+  const params = {
+    method: 'addMember',
+    sheet: 'simpanan',
+    data: data
+  };
+
+  const result = newTransaction(params);
+  SpreadsheetApp.getUi().alert(result.message);
 }
 
 function fnDaftarAnggotaModern() {
@@ -158,9 +197,14 @@ class InputTransactions {
 
   private_processAddMember() {
     const idMember = this.createIdMember();
+    
+    // Konversi ke angka & sanitasi (hapus karakter non-digit)
+    this.data.simpananPokok = Number(String(this.data.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
+    this.data.simpananWajib = Number(String(this.data.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
+
     const formattedDate = DateHelper.formatToDMY(this.data.tanggalBergabung);
     const startMonth = DateHelper.getStartOfMonth(this.data.tanggalBergabung);
-    const totalMonth = this.data.simpananWajib / this.simpananWajib;
+    const totalMonth = Math.floor(this.data.simpananWajib / this.simpananWajib);
     
     const lastMonth = new Date(startMonth);
     lastMonth.setMonth(lastMonth.getMonth() + totalMonth - 1);
@@ -186,6 +230,10 @@ class InputTransactions {
   }
 
   private_addPending() {
+    // Sanitasi data angka sebelum disimpan
+    this.data.simpananPokok = Number(String(this.data.simpananPokok).replace(/[^0-9]/g, '')) || 300000;
+    this.data.simpananWajib = Number(String(this.data.simpananWajib).replace(/[^0-9]/g, '')) || 600000;
+
     const row = MemberService.preparePendingRow(this.data);
     this.sheetPending.appendRow(row);
     return { success: true, message: 'Data pendaftaran berhasil disimpan.' };
@@ -212,12 +260,12 @@ class InputTransactions {
     switch (this.method) {
       case 'addMember':
         this.private_processAddMember();
-        break;
+        return { success: true, message: 'Anggota berhasil didaftarkan.' };
       case 'addMembersBulk':
         return this.addMembersBulk(this.data);
       case 'transactionsSimp':
         this.private_processBulkTransactions();
-        break;
+        return { success: true, message: 'Transaksi berhasil disimpan.' };
       case 'addPending':
         return this.private_addPending();
       case 'approveMember':
@@ -227,9 +275,9 @@ class InputTransactions {
       case 'rejectMember':
         return this.private_rejectMember();
     }
-    
-    const addTransactions = new Transactions(this.params);
-    addTransactions.postSimpanan();
+
+    // Fallback: dipanggil hanya jika method tidak dikenali
+    return { success: false, message: 'Method tidak dikenal: ' + this.method };
   }
 
   addMembersBulk(membersArray) {
@@ -422,8 +470,11 @@ const MemberService = {
       new Date(),
       data.tanggalBergabung, data.namaAnggota, data.nik, data.tempatLahir,
       data.tanggalLahir, data.jenisKelamin, data.telponAnggota, data.email,
-      data.alamatKTP, data.alamatTinggal, data.jenisPekerjaan, data.kantorPekerjaan,
-      data.alamatKantor, data.namaBank, data.noRekBank, data.anBank,
+      data.alamatKTP, data.alamatTinggal, 
+      data.keluargaSerumah, data.hubunganKeluargaSerumah, data.telponKeluargaSerumah,
+      data.keluargaTidakSerumah, data.telponKeluargaTidakSerumah,
+      data.jenisPekerjaan, data.kantorPekerjaan, data.alamatKantor, 
+      data.namaBank, data.noRekBank, data.anBank,
       data.simpananPokok, data.simpananWajib, data.akunPembayaran
     ];
   },
@@ -436,8 +487,11 @@ const MemberService = {
       idMember,
       data.tanggalBergabung, data.namaAnggota, data.nik, data.tempatLahir,
       data.tanggalLahir, data.jenisKelamin, data.telponAnggota, data.email,
-      data.alamatKTP, data.alamatTinggal, data.jenisPekerjaan, data.kantorPekerjaan,
-      data.alamatKantor, data.namaBank, data.noRekBank, data.anBank,
+      data.alamatKTP, data.alamatTinggal, 
+      data.keluargaSerumah, data.hubunganKeluargaSerumah, data.telponKeluargaSerumah,
+      data.keluargaTidakSerumah, data.telponKeluargaTidakSerumah,
+      data.jenisPekerjaan, data.kantorPekerjaan, data.alamatKantor, 
+      data.namaBank, data.noRekBank, data.anBank,
       data.simpananPokok, data.simpananWajib, data.akunPembayaran
     ];
   },
@@ -446,25 +500,30 @@ const MemberService = {
    */
   mapRowToMember(rowData) {
     return {
-      tanggalBergabung: rowData[0],
-      namaAnggota: rowData[1],
-      nik: rowData[2],
-      tempatLahir: rowData[3],
-      tanggalLahir: rowData[4],
-      jenisKelamin: rowData[5],
-      telponAnggota: rowData[6],
-      email: rowData[7],
-      alamatKTP: rowData[8],
-      alamatTinggal: rowData[9],
-      jenisPekerjaan: rowData[10],
-      kantorPekerjaan: rowData[11],
-      alamatKantor: rowData[12],
-      namaBank: rowData[13],
-      noRekBank: rowData[14],
-      anBank: rowData[15],
-      simpananPokok: rowData[16],
-      simpananWajib: rowData[17],
-      akunPembayaran: rowData[18]
+      tanggalBergabung: rowData[1],
+      namaAnggota: rowData[2],
+      nik: rowData[3],
+      tempatLahir: rowData[4],
+      tanggalLahir: rowData[5],
+      jenisKelamin: rowData[6],
+      telponAnggota: rowData[7],
+      email: rowData[8],
+      alamatKTP: rowData[9],
+      alamatTinggal: rowData[10],
+      keluargaSerumah: rowData[11],
+      hubunganKeluargaSerumah: rowData[12],
+      telponKeluargaSerumah: rowData[13],
+      keluargaTidakSerumah: rowData[14],
+      telponKeluargaTidakSerumah: rowData[15],
+      jenisPekerjaan: rowData[16],
+      kantorPekerjaan: rowData[17],
+      alamatKantor: rowData[18],
+      namaBank: rowData[19],
+      noRekBank: rowData[20],
+      anBank: rowData[21],
+      simpananPokok: rowData[22],
+      simpananWajib: rowData[23],
+      akunPembayaran: rowData[24]
     };
   },
 
